@@ -16,4 +16,13 @@ export default class ApplicationErrors extends Error {
             type: "CONFLICT_ERROR"
         });
     };
+
+    static internalError(message, description) {
+        return new ApplicationErrors({
+            message,
+            description,
+            code: "AI500",
+            type: "INTERNAL_SERVER_ERROR"
+        });
+    };
 };
