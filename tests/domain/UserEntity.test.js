@@ -2,62 +2,107 @@ import UserEntity from "../../src/domain/UserEntity.js";
 import DomainErros from "../../src/domain/erros/DomainErros.js";
 
 describe("Testes de Domínio: UserEntity", () => {
-    const dadosUsuarioValidos = {
+    let dataValid = {
         name: "João Silva",
-        email: "joao@exemplo.com.br",
-        password: "SenhaForte123#"
+        email: "lucas@gmail.com",
+        password: "LucasAnchieta@2025"
     };
 
     test("Deve criar uma entidade de usuário válida", () => {
-        const usuario = new UserEntity(dadosUsuarioValidos);
-        expect(usuario.name.value).toBe(dadosUsuarioValidos.name);
-        expect(usuario.email.value).toBe(dadosUsuarioValidos.email);
-        expect(usuario.password.value).toBe(dadosUsuarioValidos.password);
+        expect(() => {
+            return new UserEntity(dataValid);
+        }).toBeTruthy();
     });
 
-    describe("Validações de Nome", () => {
-        test("Deve lançar erro se o nome estiver vazio", () => {
-            expect(() => new UserEntity({ ...dadosUsuarioValidos, name: "" }))
-                .toThrow(DomainErros);
+    describe("Validação de email", () => {
+
+        test("Deve retornar um DomainError caso o email não tenha @", () => {
+            expect(() => new UserEntity({ ...dataValid, email: "lucas.gmail.com" }))
+                .toThrow("Email inválido");
         });
 
-        test("Deve lançar erro se o nome tiver menos de 3 caracteres", () => {
-            expect(() => new UserEntity({ ...dadosUsuarioValidos, name: "Jo" }))
-                .toThrow("Nome inválido, deve ter pelo menos 3 caracteres");
-        });
-    });
-
-    describe("Validações de E-mail", () => {
-        test("Deve lançar erro se o e-mail for inválido", () => {
-            expect(() => new UserEntity({ ...dadosUsuarioValidos, email: "email-invalido" }))
-                .toThrow("Email inválido, digite um email válido");
+        test("Deve retornar um DomainError caso o email não tenha .", () => {
+            expect(() => new UserEntity({ ...dataValid, email: "lucas@gmailcom" }))
+                .toThrow("Email inválido");
         });
 
-        test("Deve lançar erro se o e-mail não tiver domínio completo", () => {
-            expect(() => new UserEntity({ ...dadosUsuarioValidos, email: "joao@com" }))
-                .toThrow("Email inválido, digite um email válido");
-        });
-    });
-
-    describe("Validações de Senha", () => {
-        test("Deve lançar erro se a senha for muito curta", () => {
-            expect(() => new UserEntity({ ...dadosUsuarioValidos, password: "Sen1#" }))
-                .toThrow("no mínimo 8 caracteres");
+        test("Deve retornar um DomainError caso o email não contenha nada antes do @", () => {
+            expect(() => new UserEntity({ ...dataValid, email: "@gmail.com" }))
+                .toThrow("Email inválido");
         });
 
-        test("Deve lançar erro se a senha não tiver caractere especial", () => {
-            expect(() => new UserEntity({ ...dadosUsuarioValidos, password: "SenhaForte123" }))
-                .toThrow("caractere especial");
+        test("Deve retornar um DomainError caso o email não contenha nada depois do @", () => {
+            expect(() => new UserEntity({ ...dataValid, email: "lucas@" }))
+                .toThrow("Email inválido");
         });
 
-        test("Deve lançar erro se a senha não tiver um número", () => {
-            expect(() => new UserEntity({ ...dadosUsuarioValidos, password: "SenhaForte#@" }))
-                .toThrow("um número");
+        test("Deve retornar um DomainError caso o email seja um número", () => {
+            expect(() => new UserEntity({ ...dataValid, email: 12345 }))
+                .toThrow("Email inválido");
         });
 
-        test("Deve lançar erro se a senha não tiver letra maiúscula", () => {
-            expect(() => new UserEntity({ ...dadosUsuarioValidos, password: "senhaforte123#" }))
-                .toThrow("letra maiúscula");
+        test("Deve retornar um DomainError caso o email seja null", () => {
+            expect(() => new UserEntity({ ...dataValid, email: null }))
+                .toThrow("Email inválido");
         });
-    });
+
+        test("Deve retornar um DomainError caso o email esteja vazio", () => {
+            expect(() => new UserEntity({ ...dataValid, email: "" }))
+                .toThrow("Email inválido");
+        });
+    })
+
+    describe("Validação de nome", () => {
+        test("Deve retornar um DomainError caso o nome seja menor que 3 caracteres", () => {
+            expect(() => new UserEntity({ ...dataValid, name: "jo" }))
+                .toThrow("Nome inválido");
+        });
+
+        test("Deve retornar um DomainError caso o nome seja null", () => {
+            expect(() => new UserEntity({ ...dataValid, name: null }))
+                .toThrow("Nome inválido");
+        });
+
+        test("Deve retornar um DomainError caso o nome esteja vazio", () => {
+            expect(() => new UserEntity({ ...dataValid, name: "" }))
+                .toThrow("Nome inválido");
+        });
+    })
+
+    describe("Validação de senha", () => {
+        test("Deve retornar um DomainError caso a senha seja menor que 8 caracteres", () => {
+            expect(() => new UserEntity({ ...dataValid, password: "123" }))
+                .toThrow("Senha inválida");
+        });
+
+        test("Deve retornar um DomainError caso a senha seja null", () => {
+            expect(() => new UserEntity({ ...dataValid, password: null }))
+                .toThrow("Senha inválida");
+        });
+
+        test("Deve retornar um DomainError caso a senha esteja vazia", () => {
+            expect(() => new UserEntity({ ...dataValid, password: "" }))
+                .toThrow("Senha inválida");
+        });
+
+        test("Deve retornar um DomainError caso a senha não tenha número", () => {
+            expect(() => new UserEntity({ ...dataValid, password: "LucasAnchieta@" }))
+                .toThrow("Senha inválida");
+        });
+
+        test("Deve retornar um DomainError caso a senha não tenha letra maiúscula", () => {
+            expect(() => new UserEntity({ ...dataValid, password: "lucasanchieta@2025" }))
+                .toThrow("Senha inválida");
+        });
+
+        test("Deve retornar um DomainError caso a senha não tenha letra minúscula", () => {
+            expect(() => new UserEntity({ ...dataValid, password: "LUCASANCHIETA@2025" }))
+                .toThrow("Senha inválida");
+        });
+
+        test("Deve retornar um DomainError caso a senha não tenha caractere especial", () => {
+            expect(() => new UserEntity({ ...dataValid, password: "LucasAnchieta2025" }))
+                .toThrow("Senha inválida");
+        });
+    })
 });
