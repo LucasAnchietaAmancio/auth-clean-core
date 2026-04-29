@@ -1,5 +1,4 @@
 import UserEntity from "../../src/domain/UserEntity.js";
-import DomainErros from "../../src/domain/erros/DomainErros.js";
 
 describe("Testes de Domínio: UserEntity", () => {
     let dataValid = {

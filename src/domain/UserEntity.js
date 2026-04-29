@@ -8,4 +8,4 @@ export default class UserEntity {
         this.email = new EmailValueObject({ value: email, entityName: "UserEntity" });
         this.password = new PasswordValueObject({ value: password, entityName: "UserEntity" });
     };
-}
+};

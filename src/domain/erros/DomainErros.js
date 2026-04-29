@@ -12,7 +12,7 @@ export default class DomainErros extends Error {
         return new DomainErros({
             message,
             description,
-            code: "DEE02",
+            code: "DF400",
             type: "FIELD_VALIDATION_ERROR",
             details: {
                 where: entityName,
@@ -21,3 +21,4 @@ export default class DomainErros extends Error {
         });
     }
 }
+
