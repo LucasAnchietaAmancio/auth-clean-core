@@ -6,7 +6,7 @@ export default class DomainErros extends Error {
         this.type = type || "DOMAIN_ERROR";
         this.description = description || null;
         this.details = details || null;
-    }
+    };
 
     static fieldsValidationError(message, description, fieldName, entityName) {
         return new DomainErros({
@@ -19,6 +19,5 @@ export default class DomainErros extends Error {
                 field: fieldName,
             }
         });
-    }
-}
-
+    };
+};

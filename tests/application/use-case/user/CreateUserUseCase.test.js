@@ -6,7 +6,7 @@ describe("Testes de Aplicação: CreateUserUseCase", () => {
     const userRepositoryMocke = {
         findByEmail: jest.fn(),
         create: jest.fn()
-    }
+    };
 
     const sutCreateUserUseCase = new CreateUserUseCase(userRepositoryMocke);
 
@@ -22,5 +22,5 @@ describe("Testes de Aplicação: CreateUserUseCase", () => {
 
         await expect(sutCreateUserUseCase.execute({ email: "lucas@mail.com", password: "SenhaTeste@2025", name: "Lucas Anchieta" }))
             .rejects.toThrow("E-mail já cadastrado");
-    })
+    });
 });

@@ -49,7 +49,7 @@ describe("Testes de Domínio: UserEntity", () => {
             expect(() => new UserEntity({ ...dataValid, email: "" }))
                 .toThrow("Email inválido");
         });
-    })
+    });
 
     describe("Validação de nome", () => {
         test("Deve retornar um DomainError caso o nome seja menor que 3 caracteres", () => {
@@ -66,7 +66,7 @@ describe("Testes de Domínio: UserEntity", () => {
             expect(() => new UserEntity({ ...dataValid, name: "" }))
                 .toThrow("Nome inválido");
         });
-    })
+    });
 
     describe("Validação de senha", () => {
         test("Deve retornar um DomainError caso a senha seja menor que 8 caracteres", () => {
@@ -103,5 +103,5 @@ describe("Testes de Domínio: UserEntity", () => {
             expect(() => new UserEntity({ ...dataValid, password: "LucasAnchieta2025" }))
                 .toThrow("Senha inválida");
         });
-    })
+    });
 });
