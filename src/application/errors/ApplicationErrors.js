@@ -37,4 +37,23 @@ export default class ApplicationErrors extends Error {
             cause: originalError
         });
     };
+
+    static unauthorized({ message, description }) {
+        return new ApplicationErrors({
+            message,
+            description,
+            code: "AU401",
+            type: "UNAUTHORIZED_ERROR"
+        });
+    };
+
+    static notFound({ message, description, details }) {
+        return new ApplicationErrors({
+            message,
+            description,
+            code: "AN404",
+            type: "NOT_FOUND_ERROR",
+            details
+        });
+    }
 };

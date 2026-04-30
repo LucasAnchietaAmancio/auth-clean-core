@@ -1,6 +1,6 @@
 import UserRepository from "../../../../src/infrastructure/database/repositories/UserRepository.js";
 import UserEntity from "../../../../src/domain/entities/UserEntity.js";
-import { describe, jest } from "@jest/globals";
+import { jest } from "@jest/globals";
 
 describe("Testes de Infraestrutura: UserRepository", () => {
     const dbMock = {
@@ -30,10 +30,19 @@ describe("Testes de Infraestrutura: UserRepository", () => {
             });
 
             const result = await sutUserRepository.create({ userEntity: UserEntityExample });
-            
+
             expect(result).toBeInstanceOf(UserEntity);
             expect(result.id).toBe("1");
             expect(result.email.value).toBe("lucas@email.com");
+        });
+
+        test("Deve lançar um erro caso o usuário já exista", async () => {
+            dbMock.user.create.mockRejectedValue({
+                code: "P2002"
+            });
+
+            await expect(sutUserRepository.create({ userEntity: UserEntityExample }))
+                .rejects.toThrow("E-mail já cadastrado");
         });
     });
 
@@ -52,24 +61,6 @@ describe("Testes de Infraestrutura: UserRepository", () => {
 
             expect(result).toBeInstanceOf(UserEntity);
             expect(result.id).toBe("1");
-        });
-    });
-
-    describe("Validação da implementação do método 'findForAuth':", () => {
-        test("Deve buscar um usuário para autenticação, retornando a Entidade com senha", async () => {
-            dbMock.user.findUnique.mockResolvedValue({
-                id: "1",
-                name: "Lucas",
-                email: "lucas@email.com",
-                password: "$2b$12$NygFN5roLN2CfhB3GUsWgO53sm7dgP3Y8zgMZcJCCND1HEtRposci",
-                createdAt: "2024-10-27T10:00:00.000Z",
-                updatedAt: "2024-10-27T10:00:00.000Z"
-            });
-
-            const result = await sutUserRepository.findForAuth({ email: "lucas@email.com" });
-
-            expect(result).toBeInstanceOf(UserEntity);
-            expect(result.password.value).toBe("$2b$12$NygFN5roLN2CfhB3GUsWgO53sm7dgP3Y8zgMZcJCCND1HEtRposci");
         });
     });
 });

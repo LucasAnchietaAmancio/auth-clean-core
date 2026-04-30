@@ -12,7 +12,7 @@ export default class UserMapper {
             password: userRecord.password,
             alreadyHashed: true
         });
-    }
+    };
 
     static toPublicView(userRecord) {
         if (!userRecord) return null;
@@ -21,17 +21,6 @@ export default class UserMapper {
             id: userRecord.id,
             email: userRecord.email,
             name: userRecord.name,
-        };
-    }
-
-    static toAuthView(userRecord) {
-        if (!userRecord) return null;
-
-        return {
-            id: userRecord.id,
-            email: userRecord.email,
-            name: userRecord.name,
-            password: userRecord.password
         };
     };
 };
