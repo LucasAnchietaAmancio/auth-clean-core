@@ -1,10 +1,11 @@
 import IHashProvider from "../../../application/interfaces/IHashProvider.js";
 import InfrastructureErrors from "../../errors/InfrastructureErrors.js";
 
-export default class HashProvider extends IHashProvider {
-    constructor({ hashClient }) {
+export default class BcryptHashProvider extends IHashProvider {
+    constructor({ bcrypt }) {
         super();
-        this.hashClient = hashClient;
+        this.bcrypt = bcrypt;
+        this.salt = Number(process.env.BCRYPT_SALT);
     }
 
     async hash({ value }) {
@@ -16,7 +17,7 @@ export default class HashProvider extends IHashProvider {
         }
 
         try {
-            const valueHashed = await this.hashClient.hash(value, Number(process.env.BCRYPT_SALT));
+            const valueHashed = await this.bcrypt.hash(value, this.salt);
 
             if (!valueHashed || valueHashed.length === 0) {
                 throw InfrastructureErrors.providerError({
@@ -45,8 +46,7 @@ export default class HashProvider extends IHashProvider {
         }
 
         try {
-            const valueCompared = await this.hashClient.compare(value, hash);
-
+            const valueCompared = await this.bcrypt.compare(value, hash);
             return valueCompared;
 
         } catch (error) {

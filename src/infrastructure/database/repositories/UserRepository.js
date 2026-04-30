@@ -57,22 +57,4 @@ export default class UserRepository extends IUserRepository {
             });
         };
     };
-    async findForAuth({ email }) {
-        try {
-
-            const userRecord = await this.db.user.findUnique({
-                where: { email }
-            });
-
-            return UserMapper.toDomain(userRecord);
-
-        } catch (error) {
-            throw InfrastructureErrors.databaseError({
-                message: "Erro ao buscar usuário para autenticação",
-                description: "Falha ao realizar a busca de credenciais no banco de dados.",
-                errorClientCode: error.code,
-                originalError: error
-            });
-        };
-    };
 };

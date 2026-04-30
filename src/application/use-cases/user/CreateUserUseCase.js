@@ -9,13 +9,13 @@ export default class CreateUserUseCase {
     };
 
     async execute({ createUserRequestDTO }) {
-        const userEntity = new UserEntity({
+        const user = new UserEntity({
             email: createUserRequestDTO.email,
             password: createUserRequestDTO.password,
             name: createUserRequestDTO.name
         });
 
-        const emailUserAlreadyExists = await this.userRepository.findByEmail({ email: userEntity.email.value });
+        const emailUserAlreadyExists = await this.userRepository.findByEmail({ email: user.email.value });
 
         if (emailUserAlreadyExists) {
             throw ApplicationErrors.conflict({
@@ -24,7 +24,7 @@ export default class CreateUserUseCase {
             });
         };
 
-        const passwordHash = await this.hashProvider.hash({ password: userEntity.password.value });
+        const passwordHash = await this.hashProvider.hash({ value: user.password.value });
 
         if (!passwordHash || passwordHash.length === 0) {
             throw ApplicationErrors.internalError({
@@ -33,14 +33,14 @@ export default class CreateUserUseCase {
             });
         };
 
-        userEntity.updatePassword({ hashedPassword: passwordHash });
+        user.updatePassword({ hashedPassword: passwordHash });
 
-        const savedUserEntity = await this.userRepository.create({ userEntity });
+        const savedUser = await this.userRepository.create({ user });
 
         return new CreateUserResponseDTO({
-            id: savedUserEntity.id,
-            name: savedUserEntity.name.value,
-            email: savedUserEntity.email.value
+            id: savedUser.id,
+            name: savedUser.name.value,
+            email: savedUser.email.value
         });
     };
 };

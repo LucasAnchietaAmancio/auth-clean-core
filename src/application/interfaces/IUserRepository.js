@@ -7,8 +7,4 @@ export default class IUserRepository {
     findByEmail({ email }) {
         throw new Error("Método não implementado");
     };
-
-    findForAuth({ email }) {
-        throw new Error("Método não implementado");
-    };
 };

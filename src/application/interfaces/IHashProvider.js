@@ -1,10 +1,10 @@
 
 export default class IHashProvider {
-    async hash({ password }) {
+    async hash({ value }) {
         throw new Error("Método não implementado");
     }
 
-    async compare({ password, hash }) {
+    async compare({ value, hash }) {
         throw new Error("Método não implementado");
     }
 }
