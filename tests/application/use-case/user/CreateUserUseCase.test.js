@@ -1,5 +1,6 @@
 import { jest } from "@jest/globals";
 import CreateUserUseCase from "../../../../src/application/use-cases/user/CreateUserUseCase.js";
+import UserEntity from "../../../../src/domain/entities/UserEntity.js";
 
 describe("Testes de Aplicação: CreateUserUseCase", () => {
 
@@ -13,9 +14,12 @@ describe("Testes de Aplicação: CreateUserUseCase", () => {
         compare: jest.fn()
     };
 
-    const sutCreateUserUseCase = new CreateUserUseCase(userRepositoryMocke, hashProviderMocke);
+    const sutCreateUserUseCase = new CreateUserUseCase({
+        userRepository: userRepositoryMocke,
+        hashProvider: hashProviderMocke
+    });
 
-    describe("Validação de criação de usuário", () => {
+    describe("Validação da implementação do método 'execute':", () => {
 
         const dataValid = {
             id: "1",
@@ -23,31 +27,42 @@ describe("Testes de Aplicação: CreateUserUseCase", () => {
             email: "lucas@mail.com"
         };
 
-        test("Deve retornar um ApplicationError caso o email já exista", async () => {
+        const createUserRequestDTO = {
+            email: "lucas@mail.com",
+            password: "SenhaTeste@2025",
+            name: "Lucas Anchieta"
+        };
 
-            userRepositoryMocke.findByEmail.mockResolvedValue(dataValid);
+        const mockSavedEntity = new UserEntity({
+            id: "1",
+            name: "Lucas Anchieta",
+            email: "lucas@mail.com",
+            password: "hashedPassword",
+            alreadyHashed: true
+        });
 
-            await expect(sutCreateUserUseCase.execute({ email: "lucas@mail.com", password: "SenhaTeste@2025", name: "Lucas Anchieta" }))
+        test("Deve retornar um ApplicationError caso o email já exista, retornando a exceção de conflito", async () => {
+            userRepositoryMocke.findByEmail.mockResolvedValue(mockSavedEntity);
+
+            await expect(sutCreateUserUseCase.execute({ createUserRequestDTO }))
                 .rejects.toThrow("E-mail já cadastrado");
         });
 
-        test("Deve criar um usuário", async () => {
-
+        test("Deve criar um usuário, retornando o DTO de resposta válido", async () => {
             userRepositoryMocke.findByEmail.mockResolvedValue(null);
-            userRepositoryMocke.create.mockResolvedValue(dataValid);
-            hashProviderMocke.hash.mockResolvedValue("$2b$12$NygFN5roLN2CfhB3GUsWgO53sm7dgP3Y8zgMZcJCCND1HEtRposci");
+            userRepositoryMocke.create.mockResolvedValue(mockSavedEntity);
+            hashProviderMocke.hash.mockResolvedValue("hashedPassword");
 
-            await expect(sutCreateUserUseCase.execute({ email: "lucas@mail.com", password: "SenhaTeste@2025", name: "Lucas Anchieta" }))
+            await expect(sutCreateUserUseCase.execute({ createUserRequestDTO }))
                 .resolves.toEqual(dataValid);
         });
 
-        test("Deve retornar um ApplicationError caso a senha não seja hashed", async () => {
-
+        test("Deve retornar um ApplicationError caso a senha não seja hashed, retornando erro interno do servidor", async () => {
             userRepositoryMocke.findByEmail.mockResolvedValue(null);
             userRepositoryMocke.create.mockResolvedValue(null);
             hashProviderMocke.hash.mockResolvedValue(null);
             try {
-                await sutCreateUserUseCase.execute({ email: "lucas@mail.com", password: "SenhaTeste@2025", name: "Lucas Anchieta" });
+                await sutCreateUserUseCase.execute({ createUserRequestDTO });
             } catch (error) {
                 expect(error.description).toEqual("Ocorreu um erro ao processar a sua senha.");
             }
@@ -55,4 +70,3 @@ describe("Testes de Aplicação: CreateUserUseCase", () => {
     });
 
 });
-

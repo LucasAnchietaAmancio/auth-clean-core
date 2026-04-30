@@ -47,13 +47,6 @@ export default class HashProvider extends IHashProvider {
         try {
             const valueCompared = await this.hashClient.compare(value, hash);
 
-            if (!valueCompared) {
-                throw InfrastructureErrors.providerError({
-                    message: "Valor não corresponde ao hash",
-                    description: "O valor informado não corresponde ao hash."
-                });
-            };
-
             return valueCompared;
 
         } catch (error) {

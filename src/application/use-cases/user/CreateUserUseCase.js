@@ -1,6 +1,6 @@
-import UserEntity from "../../../domain/UserEntity.js";
-import ApplicationErrors from "../../errors/ApplicationErros.js";
-import CreateUserResponseDto from "../../dtos/user/CreateUserResponseDTO.js";
+import UserEntity from "../../../domain/entities/UserEntity.js";
+import ApplicationErrors from "../../errors/ApplicationErrors.js";
+import CreateUserResponseDTO from "../../dtos/user/CreateUserResponseDTO.js";
 
 export default class CreateUserUseCase {
     constructor({ userRepository, hashProvider }) {
@@ -8,11 +8,11 @@ export default class CreateUserUseCase {
         this.hashProvider = hashProvider;
     };
 
-    async execute({ createUserRequestDto }) {
-        const userEntity = new UserEntity({ 
-            email: createUserRequestDto.email, 
-            password: createUserRequestDto.password, 
-            name: createUserRequestDto.name 
+    async execute({ createUserRequestDTO }) {
+        const userEntity = new UserEntity({
+            email: createUserRequestDTO.email,
+            password: createUserRequestDTO.password,
+            name: createUserRequestDTO.name
         });
 
         const emailUserAlreadyExists = await this.userRepository.findByEmail({ email: userEntity.email.value });
@@ -35,12 +35,12 @@ export default class CreateUserUseCase {
 
         userEntity.updatePassword({ hashedPassword: passwordHash });
 
-        const savedUser = await this.userRepository.create({ userEntity });
+        const savedUserEntity = await this.userRepository.create({ userEntity });
 
-        return new CreateUserResponseDto({
-            id: savedUser.id,
-            name: savedUser.name,
-            email: savedUser.email
+        return new CreateUserResponseDTO({
+            id: savedUserEntity.id,
+            name: savedUserEntity.name.value,
+            email: savedUserEntity.email.value
         });
     };
 };

@@ -1,4 +1,4 @@
-export default class CreateUserResponseDto {
+export default class CreateUserResponseDTO {
     constructor({ id, name, email }) {
         this.id = id;
         this.name = name;

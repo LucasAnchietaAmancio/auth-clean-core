@@ -1,4 +1,4 @@
-export default class CreateUserRequestDto {
+export default class CreateUserRequestDTO {
     constructor({ name, email, password }) {
         this.name = name;
         this.email = email;

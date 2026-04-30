@@ -1,24 +1,37 @@
+import UserEntity from "../../../domain/entities/UserEntity.js";
 
 export default class UserMapper {
 
-    static toPublicView(prismaUser) {
-        if (!prismaUser) return null;
+    static toDomain(userRecord) {
+        if (!userRecord) return null;
+
+        return new UserEntity({
+            id: userRecord.id,
+            name: userRecord.name,
+            email: userRecord.email,
+            password: userRecord.password,
+            alreadyHashed: true
+        });
+    }
+
+    static toPublicView(userRecord) {
+        if (!userRecord) return null;
 
         return {
-            id: prismaUser.id,
-            email: prismaUser.email,
-            name: prismaUser.name,
+            id: userRecord.id,
+            email: userRecord.email,
+            name: userRecord.name,
         };
     }
 
-    static toDomainView(prismaUser) {
-        if (!prismaUser) return null;
+    static toAuthView(userRecord) {
+        if (!userRecord) return null;
 
         return {
-            id: prismaUser.id,
-            email: prismaUser.email,
-            name: prismaUser.name,
-            password: prismaUser.password
+            id: userRecord.id,
+            email: userRecord.email,
+            name: userRecord.name,
+            password: userRecord.password
         };
     };
 };

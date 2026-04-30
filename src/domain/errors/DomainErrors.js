@@ -1,5 +1,5 @@
 
-export default class DomainErros extends Error {
+export default class DomainErrors extends Error {
     constructor({ message, code, description, type, details }) {
         super(message);
         this.code = code;
@@ -9,7 +9,7 @@ export default class DomainErros extends Error {
     };
 
     static fieldsValidationError({ message, description, fieldName, entityName }) {
-        return new DomainErros({
+        return new DomainErrors({
             message,
             description,
             code: "DF400",

@@ -1,17 +1,18 @@
 import IUserRepository from "../../../application/interfaces/IUserRepository.js";
 import InfrastructureErrors from "../../errors/InfrastructureErrors.js";
 import UserMapper from "../mappers/UserMapper.js";
+import ApplicationErrors from "../../../application/errors/ApplicationErrors.js";
 
 export default class UserRepository extends IUserRepository {
-    constructor({ databaseClient }) {
+    constructor({ db }) {
         super();
-        this.db = databaseClient;
+        this.db = db;
     };
 
     async create({ userEntity }) {
         try {
 
-            const prismaUser = await this.db.user.create({
+            const userRecord = await this.db.user.create({
                 data: {
                     email: userEntity.email.value,
                     password: userEntity.password.value,
@@ -19,12 +20,19 @@ export default class UserRepository extends IUserRepository {
                 }
             });
 
-            return UserMapper.toDomainView(prismaUser);
+            return UserMapper.toDomain(userRecord);
 
         } catch (error) {
+            if (error.code === "P2002") {
+                throw ApplicationErrors.conflict({
+                    message: "E-mail já cadastrado",
+                    description: "O e-mail informado já está em uso por outra conta."
+                });
+            }
+
             throw InfrastructureErrors.databaseError({
                 message: "Erro ao criar usuário",
-                description: "Houve uma falhar ao criar o usuário no banco de dados.",
+                description: "Houve uma falha ao criar o usuário no banco de dados.",
                 errorClientCode: error.code,
                 originalError: error
             });
@@ -34,16 +42,34 @@ export default class UserRepository extends IUserRepository {
     async findByEmail({ email }) {
         try {
 
-            const prismaUser = await this.db.user.findUnique({
+            const userRecord = await this.db.user.findUnique({
                 where: { email }
             });
 
-            return UserMapper.toPublicView(prismaUser);
+            return UserMapper.toDomain(userRecord);
 
         } catch (error) {
             throw InfrastructureErrors.databaseError({
                 message: "Erro ao buscar usuário",
                 description: "Falha ao realizar a busca no banco de dados.",
+                errorClientCode: error.code,
+                originalError: error
+            });
+        };
+    };
+    async findForAuth({ email }) {
+        try {
+
+            const userRecord = await this.db.user.findUnique({
+                where: { email }
+            });
+
+            return UserMapper.toDomain(userRecord);
+
+        } catch (error) {
+            throw InfrastructureErrors.databaseError({
+                message: "Erro ao buscar usuário para autenticação",
+                description: "Falha ao realizar a busca de credenciais no banco de dados.",
                 errorClientCode: error.code,
                 originalError: error
             });
