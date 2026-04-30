@@ -5,7 +5,12 @@ export default class PasswordValueObject {
         const passwordRegex = new RegExp("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$*&@#])[0-9a-zA-Z$*&@#]{8,}$");
 
         if (!passwordRegex.test(value) || !value) {
-            throw DomainErros.fieldsValidationError("Senha inválida", "Certifique-se de que a senha seja forte (mínimo 8 caracteres, com letra maiúscula, minúscula, número e caractere especial)", "password", entityName);
+            throw DomainErros.fieldsValidationError({
+                message: "Senha inválida",
+                description: "Certifique-se de que a senha seja forte (mínimo 8 caracteres, com letra maiúscula, minúscula, número e caractere especial)",
+                fieldName: "password",
+                entityName
+            });
         }
 
         this.value = value;

@@ -1,10 +1,10 @@
 
 export default class IUserRepository {
-    create(user) {
+    create({ userEntity }) {
         throw new Error("Método não implementado");
     };
 
-    findByEmail(email) {
+    findByEmail({ email }) {
         throw new Error("Método não implementado");
     };
 };

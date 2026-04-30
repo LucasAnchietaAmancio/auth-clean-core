@@ -1,13 +1,68 @@
-import bcrypt from "bcrypt";
 import IHashProvider from "../../../application/interfaces/IHashProvider.js";
+import InfrastructureErrors from "../../errors/InfrastructureErrors.js";
 
-export default class BcryptHashProvider extends IHashProvider {
+export default class HashProvider extends IHashProvider {
+    constructor({ hashClient }) {
+        super();
+        this.hashClient = hashClient;
+    }
 
-    async hash({ password }) {
-        return await bcrypt.hash(password, 10);
-    };
+    async hash({ value }) {
+        if (!value) {
+            throw InfrastructureErrors.providerError({
+                message: "Valor não informado para gerar hash",
+                description: "Por favor, insira um valor para que o hash seja gerado."
+            });
+        }
 
-    async compare({ password, hash }) {
-        return await bcrypt.compare(password, hash);
-    };
-};
+        try {
+            const valueHashed = await this.hashClient.hash(value, Number(process.env.BCRYPT_SALT));
+
+            if (!valueHashed || valueHashed.length === 0) {
+                throw InfrastructureErrors.providerError({
+                    message: "Falha ao gerar hash",
+                    description: "Ocorreu um erro ao gerar o hash do valor informado: retorno vazio."
+                });
+            }
+
+            return valueHashed;
+        } catch (error) {
+            throw InfrastructureErrors.providerError({
+                message: "Falha interna ao gerar hash",
+                description: "Ocorreu um erro inesperado no serviço de criptografia.",
+                details: { provider: "Bcrypt", operation: "hash" },
+                originalError: error
+            });
+        }
+    }
+
+    async compare({ value, hash }) {
+        if (!value || !hash) {
+            throw InfrastructureErrors.providerError({
+                message: "Valor ou hash não informado para comparação",
+                description: "Por favor, insira um valor e um hash para que a comparação seja realizada."
+            });
+        }
+
+        try {
+            const valueCompared = await this.hashClient.compare(value, hash);
+
+            if (!valueCompared) {
+                throw InfrastructureErrors.providerError({
+                    message: "Valor não corresponde ao hash",
+                    description: "O valor informado não corresponde ao hash."
+                });
+            };
+
+            return valueCompared;
+
+        } catch (error) {
+            throw InfrastructureErrors.providerError({
+                message: "Falha interna ao comparar hash",
+                description: "Ocorreu um erro inesperado no serviço de comparação.",
+                details: { provider: "Bcrypt", operation: "compare" },
+                originalError: error
+            });
+        }
+    }
+}

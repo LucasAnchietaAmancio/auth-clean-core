@@ -8,7 +8,7 @@ export default class DomainErros extends Error {
         this.details = details || null;
     };
 
-    static fieldsValidationError(message, description, fieldName, entityName) {
+    static fieldsValidationError({ message, description, fieldName, entityName }) {
         return new DomainErros({
             message,
             description,

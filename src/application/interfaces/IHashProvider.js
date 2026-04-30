@@ -1,6 +1,6 @@
 
 export default class IHashProvider {
-    async hash({ password, salt }) {
+    async hash({ password }) {
         throw new Error("Método não implementado");
     }
 
