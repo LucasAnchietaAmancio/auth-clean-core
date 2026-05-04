@@ -16,6 +16,8 @@ Este projeto foi desenvolvido com foco em alta testabilidade (TDD), integridade 
 - [ ] **JWT & Refresh Tokens**: Gestão segura de sessões (Em desenvolvimento).
 - [ ] **OAuth 2.0**: Fluxo completo de autenticação externa (Google/Github).
 - [ ] **2FA (Two-Factor Authentication)**: Verificação de dois fatores via TOTP.
+- [ ] **Logging**: Datadog, Grafana Loki ou ELK Stack.
+- [ ] **Validação de dados**: Zod.
 
 ---
 

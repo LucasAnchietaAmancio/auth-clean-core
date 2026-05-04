@@ -7,18 +7,23 @@ export default class UserEntity {
         this.id = id || null;
         this.name = new NameValueObject({ value: name, entityName: "UserEntity" });
         this.email = new EmailValueObject({ value: email, entityName: "UserEntity" });
-        this.password = new PasswordValueObject({ 
-            value: password, 
-            entityName: "UserEntity",
-            alreadyHashed 
-        });
+        if (!password && !alreadyHashed) {
+            this.password = new PasswordValueObject({ value: password, entityName: "UserEntity" });
+        } else {
+            this.password = password ? new PasswordValueObject({
+                value: password,
+                entityName: "UserEntity",
+                alreadyHashed
+            }) : null;
+        }
     };
 
     updatePassword({ hashedPassword }) {
-        this.password = new PasswordValueObject({ 
-            value: hashedPassword, 
-            entityName: "UserEntity", 
-            alreadyHashed: true 
+        this.password = new PasswordValueObject({
+            value: hashedPassword,
+            entityName: "UserEntity",
+            alreadyHashed: true
         });
     };
 };
+

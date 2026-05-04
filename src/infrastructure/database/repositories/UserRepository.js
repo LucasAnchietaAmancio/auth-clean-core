@@ -11,7 +11,6 @@ export default class UserRepository extends IUserRepository {
 
     async create({ userEntity }) {
         try {
-
             const userRecord = await this.db.user.create({
                 data: {
                     email: userEntity.email.value,
@@ -41,9 +40,13 @@ export default class UserRepository extends IUserRepository {
 
     async findByEmail({ email }) {
         try {
-
             const userRecord = await this.db.user.findUnique({
-                where: { email }
+                where: { email },
+                select: {
+                    id: true,
+                    email: true,
+                    name: true,
+                }
             });
 
             return UserMapper.toDomain(userRecord);
@@ -56,5 +59,29 @@ export default class UserRepository extends IUserRepository {
                 originalError: error
             });
         };
+    };
+
+    async findAuthByEmail({ email }) {
+        try {
+            const userRecord = await this.db.user.findUnique({
+                where: { email },
+                select: {
+                    id: true,
+                    email: true,
+                    name: true,
+                    password: true
+                }
+            });
+
+            return UserMapper.toAuth(userRecord);
+
+        } catch (error) {
+            throw InfrastructureErrors.databaseError({
+                message: "Erro ao buscar usuário para autenticação",
+                description: "Falha ao realizar a busca no banco de dados.",
+                errorClientCode: error.code,
+                originalError: error
+            });
+        }
     };
 };

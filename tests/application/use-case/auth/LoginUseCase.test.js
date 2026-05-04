@@ -7,7 +7,7 @@ import UserEntity from "../../../../src/domain/entities/UserEntity.js";
 describe("Testes de Aplicação: LoginUseCase", () => {
 
     const userRepositoryMock = {
-        findByEmail: jest.fn(),
+        findAuthByEmail: jest.fn(),
     };
 
     const hashProviderMock = {
@@ -44,7 +44,7 @@ describe("Testes de Aplicação: LoginUseCase", () => {
         });
 
         test("Deve retornar um ApplicationError quando o email for inválido", async () => {
-            userRepositoryMock.findByEmail.mockResolvedValue(null);
+            userRepositoryMock.findAuthByEmail.mockResolvedValue(null);
 
             const loginRequestDTO = new LoginRequestDTO({
                 email: "invalido@email.com",
@@ -56,7 +56,7 @@ describe("Testes de Aplicação: LoginUseCase", () => {
         });
 
         test("Deve retornar um ApplicationError quando a senha for inválida", async () => {
-            userRepositoryMock.findByEmail.mockResolvedValue(mockUserEntity);
+            userRepositoryMock.findAuthByEmail.mockResolvedValue(mockUserEntity);
             hashProviderMock.compare.mockResolvedValue(false);
 
             const loginRequestDTO = new LoginRequestDTO({
@@ -69,7 +69,7 @@ describe("Testes de Aplicação: LoginUseCase", () => {
         });
 
         test("Deve retornar um LoginResponseDTO quando o email e senha forem válidos", async () => {
-            userRepositoryMock.findByEmail.mockResolvedValue(mockUserEntity);
+            userRepositoryMock.findAuthByEmail.mockResolvedValue(mockUserEntity);
             hashProviderMock.compare.mockResolvedValue(true);
             tokenProviderMock.generateToken.mockResolvedValue("token");
 

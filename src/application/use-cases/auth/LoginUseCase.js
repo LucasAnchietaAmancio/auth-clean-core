@@ -16,7 +16,7 @@ export default class LoginUseCase {
             });
         };
 
-        const user = await this.userRepository.findByEmail({ email: loginRequestDTO.email });
+        const user = await this.userRepository.findAuthByEmail({ email: loginRequestDTO.email });
 
         const passwordMatch = await this.hashProvider.compare({
             value: loginRequestDTO.password,
