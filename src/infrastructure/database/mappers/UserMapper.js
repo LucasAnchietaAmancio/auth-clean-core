@@ -23,4 +23,16 @@ export default class UserMapper {
             name: userRecord.name,
         };
     };
+
+    static toAuth(userRecord) {
+        if (!userRecord) return null;
+
+        return new UserEntity({
+            id: userRecord.id,
+            email: userRecord.email,
+            name: userRecord.name,
+            password: userRecord.password,
+            alreadyHashed: true
+        });
+    };
 };

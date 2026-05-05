@@ -16,14 +16,21 @@ export default class LoginUseCase {
             });
         };
 
-        const user = await this.userRepository.findByEmail({ email: loginRequestDTO.email });
+        const user = await this.userRepository.findAuthByEmail({ email: loginRequestDTO.email });
+
+        if (!user) {
+            throw ApplicationErrors.unauthorized({
+                message: "Credenciais inválidas",
+                description: "Email ou senha incorretos."
+            });
+        };
 
         const passwordMatch = await this.hashProvider.compare({
             value: loginRequestDTO.password,
-            hash: user ? user.password.value : ""
+            hash: user.password.value
         });
 
-        if (!user || !passwordMatch) {
+        if (!passwordMatch) {
             throw ApplicationErrors.unauthorized({
                 message: "Credenciais inválidas",
                 description: "Email ou senha incorretos."
