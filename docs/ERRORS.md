@@ -34,6 +34,9 @@ Correspondem ao Status HTTP equivalente (ex: 400, 401, 404, 409, 500).
 | **AC409** | Application Business Conflict | Application | E-mail já cadastrado ou violação de regra de negócio única. |
 | **AI500** | Application Internal Error | Application | Falha inesperada no processamento da regra de negócio. |
 | **ID500** | Infrastructure DB Error | Infrastructure | Erro de conexão ou falha na query do banco de dados. |
+| **PF400** | Presentation Field Validation | Presentation | Dados de entrada inválidos via Zod no Controller. |
+| **PN404** | Presentation Not Found | Presentation | Endpoint ou rota não encontrada. |
+| **PI500** | Presentation Internal Error | Presentation | Erro inesperado capturado pelo middleware global. |
 
 ---
 

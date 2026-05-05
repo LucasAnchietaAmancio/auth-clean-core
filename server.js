@@ -1,16 +1,15 @@
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
-import userRoutes from "./src/presentation/routes/user/UserRoutes.js";
-
-dotenv.config();
-
+import userRouter from "./src/presentation/routes/user/UserRouter.js";
+import authRouter from "./src/presentation/routes/auth/AuthRouter.js";
+import ErrorHandler from "./src/presentation/middlewares/ErrorHandler.js";
 import rateLimit from "express-rate-limit";
 
 const app = express();
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: "10kb" }));
 
 const globalLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
@@ -20,18 +19,22 @@ const globalLimiter = rateLimit({
 
 app.use(globalLimiter);
 
-app.use("/api", userRoutes);
+app.use("/v1", authRouter);
+app.use("/v1", userRouter);
 
 app.use((req, res) => {
     res.status(404).json({
         success: false,
         error: {
-            code: "P404",
+            code: "PN404",
             message: "Rota não encontrada",
-            description: `O endpoint ${req.method} ${req.originalUrl} não existe nesta API.`
+            description: `O endpoint ${req.method} ${req.originalUrl} não existe nesta API.`,
+            timestamp: new Date().toISOString()
         }
     });
 });
+
+app.use(ErrorHandler);
 
 const PORT = process.env.PORT || 3000;
 

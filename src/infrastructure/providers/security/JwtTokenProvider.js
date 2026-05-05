@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import ITokenProvider from "../../../application/interfaces/ITokenProvider.js";
 import InfrastructureErrors from "../../errors/InfrastructureErrors.js";
 
@@ -18,7 +19,11 @@ export default class JwtTokenProvider extends ITokenProvider {
         };
 
         try {
-            const token = this.jwt.sign(payload, this.secretKey, { expiresIn: this.expiresIn });
+            const tokenPayload = {
+                ...payload,
+                jti: crypto.randomUUID(),
+            };
+            const token = this.jwt.sign(tokenPayload, this.secretKey, { expiresIn: this.expiresIn });
             return token;
         } catch (error) {
             throw InfrastructureErrors.providerError({
