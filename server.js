@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import authRoutes from "./src/presentation/routes/AuthRoutes.js";
+import userRoutes from "./src/presentation/routes/user/UserRoutes.js";
 
 dotenv.config();
 
@@ -20,7 +20,19 @@ const globalLimiter = rateLimit({
 
 app.use(globalLimiter);
 
-app.use("/auth", authRoutes);
+app.use("/api", userRoutes);
+
+// Middleware para rotas não encontradas (404 Fallback)
+app.use((req, res, next) => {
+    res.status(404).json({
+        success: false,
+        error: {
+            code: "P404",
+            message: "Rota não encontrada",
+            description: `O endpoint ${req.method} ${req.originalUrl} não existe nesta API.`
+        }
+    });
+});
 
 const PORT = process.env.PORT || 3000;
 

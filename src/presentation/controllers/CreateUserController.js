@@ -2,11 +2,11 @@ import { z } from "zod";
 import CreateUserRequestDTO from "../../application/dtos/user/CreateUserRequestDTO.js";
 
 export default class CreateUserController {
-    constructor(createUserUseCase) {
+    constructor({ createUserUseCase }) {
         this.createUserUseCase = createUserUseCase;
     }
 
-    handle = async (req, res, next) => {
+    async handle(req, res, next) {
         try {
             const schema = z.object({
                 name: z.string().min(3).max(100),
