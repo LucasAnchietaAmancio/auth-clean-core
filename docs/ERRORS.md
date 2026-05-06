@@ -1,4 +1,4 @@
-# 🛡️ Padronização de Erros (Error Codes)
+# Padronização de Erros (Error Codes)
 
 Este projeto utiliza uma nomenclatura semântica para códigos de erro, facilitando a identificação da origem e do tipo de falha em toda a arquitetura.
 
@@ -23,7 +23,7 @@ Correspondem ao Status HTTP equivalente (ex: 400, 401, 404, 409, 500).
 
 ---
 
-## 📋 Tabela de Códigos Atuais
+## Tabela de Códigos Atuais
 
 | Código | Descrição | Camada | Motivo Comum |
 | :--- | :--- | :--- | :--- |
@@ -40,16 +40,12 @@ Correspondem ao Status HTTP equivalente (ex: 400, 401, 404, 409, 500).
 
 ---
 
-## Como utilizar no código
+## Tradução de Erros de Infraestrutura
 
-Os erros são lançados através de métodos estáticos nas classes de erro correspondentes, garantindo que o `status` e o `code` estejam sempre corretos.
+Para evitar que erros técnicos do banco de dados (Prisma) vazem para o cliente ou poluam os repositórios, utilizamos o **`PrismaErrorTranslator`**.
 
-```javascript
-// Exemplo no Use Case
-if (userAlreadyExists) {
-    throw ApplicationErrors.conflict({
-        message: "E-mail já cadastrado",
-        description: "Este e-mail já pertence a uma conta ativa."
-    });
-}
-```
+- **Objetivo**: Capturar códigos específicos do Prisma (ex: `P2002` para Unique Constraint) e convertê-los automaticamente para erros semânticos da aplicação (`AC409` - Conflict).
+- **Fallback**: Qualquer erro de banco não mapeado é convertido automaticamente para `ID500` (Infrastructure DB Error), garantindo que o log contenha o erro original mas o cliente receba uma mensagem segura.
+
+---
+

@@ -1,6 +1,6 @@
 import IUserRepository from "../../../application/interfaces/IUserRepository.js";
 import UserMapper from "../mappers/UserMapper.js";
-import PrismaErrorTranslator from "../utils/PrismaErrorTranslator.js";
+import PrismaErrorTranslator from "../prisma/PrismaErrorTranslator.js";
 
 export default class UserRepository extends IUserRepository {
     constructor({ db }) {

@@ -21,6 +21,19 @@ export default class InfrastructureErrors extends Error {
         });
     };
 
+    static connectionExternalServiceError({ message, description, errorClientCode, originalError }) {
+        return new InfrastructureErrors({
+            message,
+            description,
+            code: "IC500",
+            type: "CONNECTION_EXTERNAL_SERVICE_ERROR",
+            details: {
+                errorClientCode: errorClientCode || "UNKNOWN"
+            },
+            cause: originalError
+        });
+    };
+
     static internalServerError({ message, description, originalError }) {
         return new InfrastructureErrors({
             message,

@@ -3,7 +3,7 @@ import express from "express";
 import cors from "cors";
 import userRouter from "./src/presentation/routes/user/UserRouter.js";
 import authRouter from "./src/presentation/routes/auth/AuthRouter.js";
-import ErrorHandler from "./src/presentation/middlewares/ErrorHandler.js";
+import ErrorHandler from "./src/presentation/middlewares/ErrorHandler.middleware.js";
 import rateLimit from "express-rate-limit";
 
 const app = express();
@@ -23,6 +23,7 @@ app.use("/v1", authRouter);
 app.use("/v1", userRouter);
 
 app.use((req, res) => {
+    console.log(req);
     res.status(404).json({
         success: false,
         error: {

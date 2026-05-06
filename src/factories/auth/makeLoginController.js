@@ -1,10 +1,10 @@
-import UserRepository from "../../infrastructure/database/repositories/UserRepository.js";
-import BcryptHashProvider from "../../infrastructure/providers/security/BcryptHashProvider.js";
+import UserRepository from "../../infrastructure/persistence/repositories/UserRepository.js";
+import BcryptHashProvider from "../../infrastructure/security/providers/BcryptHashProvider.js";
 import LoginController from "../../presentation/controllers/LoginController.js";
 import LoginUseCase from "../../application/use-cases/auth/LoginUseCase.js";
-import JwtTokenProvider from "../../infrastructure/providers/security/JwtTokenProvider.js";
+import JwtTokenProvider from "../../infrastructure/security/providers/JwtTokenProvider.js";
 import jwt from "jsonwebtoken";
-import prismaClient from "../../../prisma/PrismaClient.js";
+import prismaClient from "../../infrastructure/persistence/prisma/PrismaClient.js";
 import bcrypt from "bcrypt";
 
 export const makeLoginController = () => {
