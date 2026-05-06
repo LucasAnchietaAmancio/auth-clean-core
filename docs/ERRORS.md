@@ -17,9 +17,30 @@ Este projeto utiliza uma nomenclatura semântica para códigos de erro, facilita
 - **N**: Not Found (Recurso não encontrado)
 - **B**: Bad Request (Requisição malformada)
 - **I**: Internal Error (Erro interno ou de servidor)
+- **R**: Rate Limit (Throttling)
 
 ### 3. Status (Números)
-Correspondem ao Status HTTP equivalente (ex: 400, 401, 404, 409, 500).
+Correspondem ao Status HTTP equivalente (ex: 400, 401, 404, 409, 429, 500).
+
+---
+
+## Formato de Resposta Padronizado (JSON)
+
+Todas as classes de erro herdam de `Error` e fornecem uma estrutura consistente que o `ErrorHandlerMiddleware` utiliza para responder ao cliente:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "PF400",
+    "message": "Mensagem curta amigável",
+    "description": "Explicação detalhada do erro para o usuário final",
+    "timestamp": "2026-05-06T18:00:00.000Z",
+    "details": {}, // Opcional (apenas em desenvolvimento ou erros de validação)
+    "cause": "..." // Opcional (apenas em desenvolvimento)
+  }
+}
+```
 
 ---
 
@@ -36,16 +57,15 @@ Correspondem ao Status HTTP equivalente (ex: 400, 401, 404, 409, 500).
 | **ID500** | Infrastructure DB Error | Infrastructure | Erro de conexão ou falha na query do banco de dados. |
 | **PF400** | Presentation Field Validation | Presentation | Dados de entrada inválidos via Zod no Controller. |
 | **PN404** | Presentation Not Found | Presentation | Endpoint ou rota não encontrada. |
+| **PI429** | Presentation Rate Limit | Presentation | Limite de requisições excedido para o IP ou rota. |
 | **PI500** | Presentation Internal Error | Presentation | Erro inesperado capturado pelo middleware global. |
 
 ---
 
-## Tradução de Erros de Infraestrutura
+## Tradução e Gestão de Erros
 
-Para evitar que erros técnicos do banco de dados (Prisma) vazem para o cliente ou poluam os repositórios, utilizamos o **`PrismaErrorTranslator`**.
+O projeto utiliza **Translators** para garantir que erros de terceiros não vazem detalhes de implementação:
 
-- **Objetivo**: Capturar códigos específicos do Prisma (ex: `P2002` para Unique Constraint) e convertê-los automaticamente para erros semânticos da aplicação (`AC409` - Conflict).
-- **Fallback**: Qualquer erro de banco não mapeado é convertido automaticamente para `ID500` (Infrastructure DB Error), garantindo que o log contenha o erro original mas o cliente receba uma mensagem segura.
-
----
-
+- **`PrismaErrorTranslator`**: Converte erros de banco (ex: `P2002`) em erros semânticos como `AC409`.
+- **`RedisErrorTranslator`**: Converte falhas de conexão com o cache em erros de infraestrutura `ID500`.
+- **Explicit HTTP Status**: Todas as classes de erro agora possuem a propriedade `httpStatus` embutida, permitindo que o middleware de resposta seja totalmente agnóstico e seguro.
