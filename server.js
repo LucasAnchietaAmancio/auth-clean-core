@@ -3,8 +3,9 @@ import express from "express";
 import cors from "cors";
 import userRouter from "./src/presentation/routes/user/UserRouter.js";
 import authRouter from "./src/presentation/routes/auth/AuthRouter.js";
-import ErrorHandler from "./src/presentation/middlewares/ErrorHandler.middleware.js";
+import ErrorHandlerMiddleware from "./src/presentation/middlewares/ErrorHandlerMiddleware.js";
 import rateLimit from "express-rate-limit";
+import PresentationErrors from "./src/presentation/errors/PresentationErrors.js";
 
 const app = express();
 
@@ -22,20 +23,14 @@ app.use(globalLimiter);
 app.use("/v1", authRouter);
 app.use("/v1", userRouter);
 
-app.use((req, res) => {
-    console.log(req);
-    res.status(404).json({
-        success: false,
-        error: {
-            code: "PN404",
-            message: "Rota não encontrada",
-            description: `O endpoint ${req.method} ${req.originalUrl} não existe nesta API.`,
-            timestamp: new Date().toISOString()
-        }
-    });
+app.use((req, res, next) => {
+    next(PresentationErrors.notFound({
+        message: "Rota não encontrada",
+        description: `A rota ${req.method} ${req.originalUrl} não existe nesta API.`
+    }));
 });
 
-app.use(ErrorHandler);
+app.use(ErrorHandlerMiddleware.execute);
 
 const PORT = process.env.PORT || 3000;
 

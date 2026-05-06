@@ -1,5 +1,5 @@
-import IHashProvider from "../../../application/interfaces/IHashProvider.js";
-import InfrastructureErrors from "../../errors/InfrastructureErrors.js";
+import IHashProvider from "../../application/interfaces/IHashProvider.js";
+import InfrastructureErrors from "../errors/InfrastructureErrors.js";
 
 export default class BcryptHashProvider extends IHashProvider {
     constructor({ bcrypt }) {
