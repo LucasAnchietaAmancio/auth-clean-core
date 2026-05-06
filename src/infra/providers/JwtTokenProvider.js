@@ -1,6 +1,6 @@
 import crypto from "crypto";
-import ITokenProvider from "../../../application/interfaces/ITokenProvider.js";
-import InfrastructureErrors from "../../errors/InfrastructureErrors.js";
+import ITokenProvider from "../../application/interfaces/ITokenProvider.js";
+import InfrastructureErrors from "../errors/InfrastructureErrors.js";
 
 export default class JwtTokenProvider extends ITokenProvider {
     constructor({ jwt }) {

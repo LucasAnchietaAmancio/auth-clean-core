@@ -1,8 +1,9 @@
 
 export default class ApplicationErrors extends Error {
-    constructor({ message, code, description, type, details, cause }) {
+    constructor({ message, code, httpStatus, description, type, details, cause }) {
         super(message, { cause });
         this.code = code;
+        this.httpStatus = httpStatus;
         this.type = type || "APPLICATION_ERROR";
         this.description = description || null;
         this.details = details || null;
@@ -14,6 +15,7 @@ export default class ApplicationErrors extends Error {
             message,
             description,
             code: "AB400",
+            httpStatus: 400,
             type: "BAD_REQUEST_ERROR",
             details
         });
@@ -24,6 +26,7 @@ export default class ApplicationErrors extends Error {
             message,
             description,
             code: "AC409",
+            httpStatus: 409,
             type: "CONFLICT_ERROR"
         });
     };
@@ -33,6 +36,7 @@ export default class ApplicationErrors extends Error {
             message,
             description,
             code: "AI500",
+            httpStatus: 500,
             type: "INTERNAL_SERVER_ERROR",
             cause: originalError
         });
@@ -43,6 +47,7 @@ export default class ApplicationErrors extends Error {
             message,
             description,
             code: "AU401",
+            httpStatus: 401,
             type: "UNAUTHORIZED_ERROR"
         });
     };
@@ -52,8 +57,9 @@ export default class ApplicationErrors extends Error {
             message,
             description,
             code: "AN404",
+            httpStatus: 404,
             type: "NOT_FOUND_ERROR",
             details
         });
-    }
+    };
 };

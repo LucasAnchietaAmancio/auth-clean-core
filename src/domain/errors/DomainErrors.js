@@ -1,11 +1,13 @@
 
 export default class DomainErrors extends Error {
-    constructor({ message, code, description, type, details }) {
+    constructor({ message, code, httpStatus, description, type, details }) {
         super(message);
         this.code = code;
+        this.httpStatus = httpStatus;
         this.type = type || "DOMAIN_ERROR";
         this.description = description || null;
         this.details = details || null;
+        this.timestamp = new Date().toISOString();
     };
 
     static fieldsValidationError({ message, description, fieldName, entityName }) {
@@ -13,6 +15,7 @@ export default class DomainErrors extends Error {
             message,
             description,
             code: "DF400",
+            httpStatus: 400,
             type: "FIELD_VALIDATION_ERROR",
             details: {
                 where: entityName,
