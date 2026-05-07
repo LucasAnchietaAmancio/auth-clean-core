@@ -1,6 +1,6 @@
 
-import ITokenProvider from "../../application/interfaces/providers/ITokenProvider.js";
-import InfrastructureErrors from "../errors/InfrastructureErrors.js";
+import ITokenProvider from "../../../domain/contracts/providers/ITokenProvider.js";
+import InfrastructureErrors from "../../errors/InfrastructureErrors.js";
 
 export default class JwtTokenProvider extends ITokenProvider {
     constructor({ jwt, crypto, envs }) {

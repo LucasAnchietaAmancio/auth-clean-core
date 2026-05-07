@@ -1,4 +1,4 @@
-import IUserRepository from "../../../application/interfaces/repositories/IUserRepository.js";
+import IUserRepository from "../../../domain/contracts/repositories/IUserRepository.js";
 import UserMapper from "../mappers/UserMapper.js";
 import PrismaErrorTranslator from "../prisma/PrismaErrorTranslator.js";
 

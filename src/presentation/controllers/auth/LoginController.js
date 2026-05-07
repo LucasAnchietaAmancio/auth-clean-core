@@ -1,4 +1,4 @@
-import LoginRequestDTO from "../../application/dtos/auth/LoginRequestDTO.js";
+import LoginRequestDTO from "../../../application/dtos/auth/LoginRequestDTO.js";
 
 export default class LoginController {
     constructor({ loginUseCase }) {
