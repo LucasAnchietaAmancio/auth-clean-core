@@ -1,7 +1,7 @@
 import UserRepository from "../../../infra/db/repositories/UserRepository.js";
-import BcryptHashProvider from "../../../infra/providers/BcryptHashProvider.js";
+import BcryptHashProvider from "../../../infra/providers/hash/BcryptHashProvider.js";
 import CreateUserUseCase from "../../../application/use-cases/user/CreateUserUseCase.js";
-import CreateUserController from "../../../presentation/controllers/CreateUserController.js";
+import CreateUserController from "../../../presentation/controllers/user/CreateUserController.js";
 import prismaClient from "../../../infra/db/prisma/PrismaClient.js";
 import bcrypt from "bcrypt";
 

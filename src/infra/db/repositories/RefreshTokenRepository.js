@@ -1,4 +1,4 @@
-import IRefreshTokenRepository from "../../../application/interfaces/repositories/IRefreshTokenRepository.js";
+import IRefreshTokenRepository from "../../../domain/contracts/repositories/IRefreshTokenRepository.js";
 import PrismaErrorTranslator from "../prisma/PrismaErrorTranslator.js";
 import RefreshTokenMapper from "../mappers/RefreshTokenMapper.js";
 

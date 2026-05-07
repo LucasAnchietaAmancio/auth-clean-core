@@ -1,4 +1,4 @@
-import CreateUserRequestDTO from "../../application/dtos/user/CreateUserRequestDTO.js";
+import CreateUserRequestDTO from "../../../application/dtos/user/CreateUserRequestDTO.js";
 
 export default class CreateUserController {
     constructor({ createUserUseCase }) {
