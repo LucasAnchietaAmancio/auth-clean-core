@@ -1,6 +1,7 @@
 export default class LoginResponseDTO {
-    constructor({ token, user }) {
-        this.token = token;
+    constructor({ accessToken, refreshToken, user }) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
         this.user = {
             id: user.id,
             name: user.name,

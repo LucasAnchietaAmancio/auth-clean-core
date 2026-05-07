@@ -10,18 +10,32 @@ describe("Testes de Aplicação: LoginUseCase", () => {
         findAuthByEmail: jest.fn(),
     };
 
+    const refreshTokenRepositoryMock = {
+        create: jest.fn(),
+    };
+
     const hashProviderMock = {
         compare: jest.fn(),
     };
 
     const tokenProviderMock = {
         generateToken: jest.fn(),
+        decodeToken: jest.fn(),
+    };
+
+    const envsMock = {
+        jwt: {
+            accessTokenExpiresIn: "1h",
+            refreshTokenExpiresIn: "7d"
+        }
     };
 
     const sutLoginUseCase = new LoginUseCase({
         userRepository: userRepositoryMock,
+        refreshTokenRepository: refreshTokenRepositoryMock,
         hashProvider: hashProviderMock,
-        tokenProvider: tokenProviderMock
+        tokenProvider: tokenProviderMock,
+        envs: envsMock
     });
 
     const mockUserEntity = new UserEntity({
@@ -32,7 +46,7 @@ describe("Testes de Aplicação: LoginUseCase", () => {
         alreadyHashed: true
     });
 
-    describe("Validação da implementação do metodo 'execute':", () => {
+    describe("Validação da implementação do método 'execute':", () => {
         test("Deve retornar um ApplicationError quando não for enviado ou email ou senha", async () => {
             const loginRequestDTO = new LoginRequestDTO({
                 email: "",
@@ -68,10 +82,19 @@ describe("Testes de Aplicação: LoginUseCase", () => {
                 .rejects.toThrow("Credenciais inválidas");
         });
 
-        test("Deve retornar um LoginResponseDTO quando o email e senha forem válidos", async () => {
+        test("Deve retornar um LoginResponseDTO válido quando as credenciais estiverem corretas", async () => {
             userRepositoryMock.findAuthByEmail.mockResolvedValue(mockUserEntity);
             hashProviderMock.compare.mockResolvedValue(true);
-            tokenProviderMock.generateToken.mockResolvedValue("token");
+            tokenProviderMock.generateToken
+                .mockResolvedValueOnce("access-token")
+                .mockResolvedValueOnce("refresh-token");
+            
+            tokenProviderMock.decodeToken.mockResolvedValue({
+                jti: "jti-mock",
+                exp: 9999999999
+            });
+
+            refreshTokenRepositoryMock.create.mockResolvedValue({});
 
             const loginRequestDTO = new LoginRequestDTO({
                 email: "lucas@email.com",
@@ -81,13 +104,13 @@ describe("Testes de Aplicação: LoginUseCase", () => {
             const result = await sutLoginUseCase.execute({ loginRequestDTO });
 
             expect(result).toBeInstanceOf(LoginResponseDTO);
-            expect(result).toEqual({
-                token: "token",
-                user: {
-                    id: "id-valido",
-                    name: "Lucas Anchieta",
-                    email: "lucas@email.com"
-                }
+            expect(result.accessToken).toBe("access-token");
+            expect(result.refreshToken).toBe("refresh-token");
+            expect(refreshTokenRepositoryMock.create).toHaveBeenCalled();
+            expect(result.user).toEqual({
+                id: "id-valido",
+                name: "Lucas Anchieta",
+                email: "lucas@email.com"
             });
         });
     });

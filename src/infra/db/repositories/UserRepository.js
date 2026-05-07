@@ -1,4 +1,4 @@
-import IUserRepository from "../../../application/interfaces/IUserRepository.js";
+import IUserRepository from "../../../application/interfaces/repositories/IUserRepository.js";
 import UserMapper from "../mappers/UserMapper.js";
 import PrismaErrorTranslator from "../prisma/PrismaErrorTranslator.js";
 
@@ -10,7 +10,7 @@ export default class UserRepository extends IUserRepository {
 
     async create({ user }) {
         try {
-            const userRecord = await this.db.user.create({
+            const userRecord = await this.db.users.create({
                 data: {
                     email: user.email.value,
                     password: user.password.value,
@@ -31,10 +31,10 @@ export default class UserRepository extends IUserRepository {
 
     async findByEmail({ email }) {
         try {
-            const userRecord = await this.db.user.findUnique({
+            const userRecord = await this.db.users.findUnique({
                 where: { email },
                 select: {
-                    id: true,
+                    id_user: true,
                     email: true,
                     name: true,
                 }
@@ -52,10 +52,10 @@ export default class UserRepository extends IUserRepository {
 
     async findAuthByEmail({ email }) {
         try {
-            const userRecord = await this.db.user.findUnique({
+            const userRecord = await this.db.users.findUnique({
                 where: { email },
                 select: {
-                    id: true,
+                    id_user: true,
                     email: true,
                     name: true,
                     password: true

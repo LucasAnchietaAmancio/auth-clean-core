@@ -1,16 +1,16 @@
-import crypto from "crypto";
-import ITokenProvider from "../../application/interfaces/ITokenProvider.js";
+
+import ITokenProvider from "../../application/interfaces/providers/ITokenProvider.js";
 import InfrastructureErrors from "../errors/InfrastructureErrors.js";
 
 export default class JwtTokenProvider extends ITokenProvider {
-    constructor({ jwt }) {
+    constructor({ jwt, crypto, envs }) {
         super();
         this.jwt = jwt;
-        this.secretKey = process.env.JWT_SECRET_KEY;
-        this.expiresIn = process.env.JWT_EXPIRES_IN;
+        this.secretKey = envs.jwt.secretKey;
+        this.crypto = crypto;
     }
 
-    async generateToken({ payload }) {
+    async generateToken({ payload, expires }) {
         if (!payload) {
             throw InfrastructureErrors.providerError({
                 message: "Payload não informado para gerar token",
@@ -21,9 +21,9 @@ export default class JwtTokenProvider extends ITokenProvider {
         try {
             const tokenPayload = {
                 ...payload,
-                jti: crypto.randomUUID(),
+                jti: this.crypto.randomUUID(),
             };
-            const token = this.jwt.sign(tokenPayload, this.secretKey, { expiresIn: this.expiresIn });
+            const token = this.jwt.sign(tokenPayload, this.secretKey, { expiresIn: expires });
             return token;
         } catch (error) {
             throw InfrastructureErrors.providerError({

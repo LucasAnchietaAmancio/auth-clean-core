@@ -1,11 +1,11 @@
-import IHashProvider from "../../application/interfaces/IHashProvider.js";
+import IHashProvider from "../../application/interfaces/providers/IHashProvider.js";
 import InfrastructureErrors from "../errors/InfrastructureErrors.js";
 
 export default class BcryptHashProvider extends IHashProvider {
-    constructor({ bcrypt }) {
+    constructor({ bcrypt, envs }) {
         super();
         this.bcrypt = bcrypt;
-        this.salt = Number(process.env.BCRYPT_SALT);
+        this.salt = envs.hash.salt;
     }
 
     async hash({ value }) {

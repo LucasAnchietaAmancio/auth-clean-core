@@ -1,6 +1,6 @@
 
 export default class ITokenProvider {
-    async generateToken({ payload }) {
+    async generateToken({ payload, expires }) {
         throw new Error("Método não implementado");
     };
 

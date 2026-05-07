@@ -23,4 +23,13 @@ export default class DomainErrors extends Error {
             }
         });
     };
+
+    static refreshTokenExpiredError() {
+        return new DomainErrors({
+            message: "Refresh token expirado",
+            code: "DF400",
+            httpStatus: 400,
+            type: "REFRESH_TOKEN_EXPIRED_ERROR"
+        });
+    }
 };
