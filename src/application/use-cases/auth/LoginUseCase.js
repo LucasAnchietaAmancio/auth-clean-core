@@ -1,11 +1,14 @@
-import ApplicationErrors from "../../errors/ApplicationErrors.js"; // Adicionado .js
+import ApplicationErrors from "../../errors/ApplicationErrors.js";
 import LoginResponseDTO from "../../dtos/auth/LoginResponseDTO.js";
+import RefreshTokenEntity from "../../../domain/entities/RefreshTokenEntity.js";
 
 export default class LoginUseCase {
-    constructor({ userRepository, hashProvider, tokenProvider }) {
+    constructor({ userRepository, hashProvider, tokenProvider, refreshTokenRepository, envs }) {
         this.userRepository = userRepository;
         this.hashProvider = hashProvider;
+        this.refreshTokenRepository = refreshTokenRepository;
         this.tokenProvider = tokenProvider;
+        this.envs = envs;
     }
 
     async execute({ loginRequestDTO }) {
@@ -37,15 +40,37 @@ export default class LoginUseCase {
             });
         };
 
-        const token = await this.tokenProvider.generateToken({
+        const accessToken = await this.tokenProvider.generateToken({
             payload: {
                 id: user.id,
                 email: user.email.value
-            }
+            },
+            expires: this.envs.jwt.accessTokenExpiresIn
+        });
+
+        const refreshTokenValue = await this.tokenProvider.generateToken({
+            payload: { id: user.id, email: user.email.value },
+            expires: this.envs.jwt.refreshTokenExpiresIn
+        });
+
+        const decoded = await this.tokenProvider.decodeToken({
+            token: refreshTokenValue
+        });
+
+        const refreshTokenEntity = new RefreshTokenEntity({
+            userId: user.id,
+            token: refreshTokenValue,
+            jti: decoded.jti,
+            expiresAt: decoded.exp
+        });
+
+        await this.refreshTokenRepository.create({
+            refreshTokenEntity: refreshTokenEntity
         });
 
         return new LoginResponseDTO({
-            token,
+            accessToken: accessToken,
+            refreshToken: refreshTokenEntity.token,
             user: {
                 id: user.id,
                 name: user.name.value,

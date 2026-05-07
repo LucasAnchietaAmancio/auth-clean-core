@@ -1,10 +1,10 @@
-import UserRepository from "../../../../src/infrastructure/database/repositories/UserRepository.js";
+import UserRepository from "../../../../src/infra/db/repositories/UserRepository.js";
 import UserEntity from "../../../../src/domain/entities/UserEntity.js";
 import { jest } from "@jest/globals";
 
 describe("Testes de Infraestrutura: UserRepository", () => {
     const dbMock = {
-        user: {
+        users: {
             create: jest.fn(),
             findUnique: jest.fn()
         }
@@ -20,8 +20,8 @@ describe("Testes de Infraestrutura: UserRepository", () => {
 
     describe("Validação da implementação do método 'create':", () => {
         test("Deve criar um usuário no banco de dados, retornando a Entidade de Domínio", async () => {
-            dbMock.user.create.mockResolvedValue({
-                id: "1",
+            dbMock.users.create.mockResolvedValue({
+                id_user: 1,
                 name: "Lucas",
                 email: "lucas@email.com",
                 password: "$2b$12$NygFN5roLN2CfhB3GUsWgO53sm7dgP3Y8zgMZcJCCND1HEtRposci",
@@ -29,27 +29,27 @@ describe("Testes de Infraestrutura: UserRepository", () => {
                 updatedAt: "2024-10-27T10:00:00.000Z"
             });
 
-            const result = await sutUserRepository.create({ userEntity: UserEntityExample });
+            const result = await sutUserRepository.create({ user: UserEntityExample });
 
             expect(result).toBeInstanceOf(UserEntity);
-            expect(result.id).toBe("1");
+            expect(result.id).toBe(1);
             expect(result.email.value).toBe("lucas@email.com");
         });
 
         test("Deve lançar um erro caso o usuário já exista", async () => {
-            dbMock.user.create.mockRejectedValue({
+            dbMock.users.create.mockRejectedValue({
                 code: "P2002"
             });
 
-            await expect(sutUserRepository.create({ userEntity: UserEntityExample }))
-                .rejects.toThrow("E-mail já cadastrado");
+            await expect(sutUserRepository.create({ user: UserEntityExample }))
+                .rejects.toThrow("Erro ao criar usuário");
         });
     });
 
     describe("Validação da implementação do método 'findByEmail':", () => {
         test("Deve buscar um usuário no banco de dados, retornando a Entidade de Domínio", async () => {
-            dbMock.user.findUnique.mockResolvedValue({
-                id: "1",
+            dbMock.users.findUnique.mockResolvedValue({
+                id_user: 1,
                 name: "Lucas",
                 email: "lucas@email.com",
                 password: "$2b$12$NygFN5roLN2CfhB3GUsWgO53sm7dgP3Y8zgMZcJCCND1HEtRposci",
@@ -60,7 +60,7 @@ describe("Testes de Infraestrutura: UserRepository", () => {
             const result = await sutUserRepository.findByEmail({ email: "lucas@email.com" });
 
             expect(result).toBeInstanceOf(UserEntity);
-            expect(result.id).toBe("1");
+            expect(result.id).toBe(1);
         });
     });
 });

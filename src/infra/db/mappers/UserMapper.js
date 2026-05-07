@@ -6,7 +6,7 @@ export default class UserMapper {
         if (!userRecord) return null;
 
         return new UserEntity({
-            id: userRecord.id,
+            id: userRecord.id_user,
             name: userRecord.name,
             email: userRecord.email,
             password: userRecord.password,
@@ -18,7 +18,7 @@ export default class UserMapper {
         if (!userRecord) return null;
 
         return {
-            id: userRecord.id,
+            id: userRecord.id_user,
             email: userRecord.email,
             name: userRecord.name,
         };
@@ -28,7 +28,7 @@ export default class UserMapper {
         if (!userRecord) return null;
 
         return new UserEntity({
-            id: userRecord.id,
+            id: userRecord.id_user,
             email: userRecord.email,
             name: userRecord.name,
             password: userRecord.password,
