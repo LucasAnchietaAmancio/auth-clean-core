@@ -1,6 +1,6 @@
 import IUserRepository from "../../../domain/contracts/repositories/IUserRepository.js";
 import UserMapper from "../mappers/UserMapper.js";
-import PrismaErrorTranslator from "../prisma/PrismaErrorTranslator.js";
+import DatabaseError from "../../errors/DatabaseError.js";
 
 export default class UserRepository extends IUserRepository {
     constructor({ db }) {
@@ -10,7 +10,8 @@ export default class UserRepository extends IUserRepository {
 
     async create({ user }) {
         try {
-            const userRecord = await this.db.users.create({
+            const db = await this.db.getClient();
+            const userRecord = await db.users.create({
                 data: {
                     email: user.email.value,
                     password: user.password.value,
@@ -21,29 +22,30 @@ export default class UserRepository extends IUserRepository {
             return UserMapper.toDomain(userRecord);
 
         } catch (error) {
-            throw PrismaErrorTranslator.translate({
+            throw DatabaseError.handle({
                 error,
-                message: "Erro ao criar usuário",
-                description: "O e-mail informado já está em uso por outra conta."
+                message: "Erro ao criar usuário"
             });
         };
     };
 
     async findByEmail({ email }) {
         try {
-            const userRecord = await this.db.users.findUnique({
+            const db = await this.db.getClient();
+            const userRecord = await db.users.findUnique({
                 where: { email },
                 select: {
                     id_user: true,
                     email: true,
                     name: true,
+                    password: true
                 }
             });
 
             return UserMapper.toDomain(userRecord);
 
         } catch (error) {
-            throw PrismaErrorTranslator.translate({
+            throw DatabaseError.handle({
                 error,
                 message: "Erro ao buscar usuário"
             });
@@ -52,7 +54,8 @@ export default class UserRepository extends IUserRepository {
 
     async findAuthByEmail({ email }) {
         try {
-            const userRecord = await this.db.users.findUnique({
+            const db = await this.db.getClient();
+            const userRecord = await db.users.findUnique({
                 where: { email },
                 select: {
                     id_user: true,
@@ -65,7 +68,7 @@ export default class UserRepository extends IUserRepository {
             return UserMapper.toAuth(userRecord);
 
         } catch (error) {
-            throw PrismaErrorTranslator.translate({
+            throw DatabaseError.handle({
                 error,
                 message: "Erro ao buscar usuário para autenticação"
             });

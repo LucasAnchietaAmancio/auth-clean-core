@@ -1,14 +1,9 @@
-import DomainErrors from "../errors/DomainErrors.js";
+import InvalidNameError from "../errors/InvalidNameError.js";
 
 export default class NameValueObject {
-    constructor({ value, entityName }) {
+    constructor({ value }) {
         if (!value || typeof value !== "string" || value.trim().length < 3) {
-            throw DomainErrors.fieldsValidationError({
-                message: "Nome inválido",
-                description: "Certifique-se de que o nome tenha pelo menos 3 caracteres",
-                fieldName: "name",
-                entityName
-            });
+            throw new InvalidNameError({ originalError: `Nome: ${value} não condiz com a formatação de nome válida` });
         }
 
         this.value = value;

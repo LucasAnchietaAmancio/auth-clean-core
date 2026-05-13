@@ -1,16 +1,11 @@
-import DomainErrors from "../errors/DomainErrors.js";
+import InvalidEmailError from "../errors/InvalidEmailError.js";
 
 export default class EmailValueObject {
-    constructor({ value, entityName }) {
+    constructor({ value }) {
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
         if (typeof value !== "string" || !emailRegex.test(value) || !value) {
-            throw DomainErrors.fieldsValidationError({
-                message: "Email inválido",
-                description: "Certifique-se de que o email informado seja uma string válida e contenha @ e domínio (ex: usuario@dominio.com)",
-                fieldName: "email",
-                entityName
-            });
+            throw new InvalidEmailError({ originalError: `E-mail: ${value} não condiz com a formatação de e-mails válida` });
         }
 
         this.value = value;

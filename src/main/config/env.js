@@ -12,7 +12,7 @@ export default class Envs {
                 database: this.parseTo({ value: process.env.POSTGRES_DB, type: "string" })
             },
             redis: {
-                uri: this.parseTo({ value: process.env.REDIS_URI, type: "string" })
+                url: this.parseTo({ value: process.env.REDIS_URL, type: "string" })
             }
         };
 

@@ -1,6 +1,6 @@
 import rateLimit from "express-rate-limit";
 import RedisStore from "rate-limit-redis";
-import PresentationErrors from "../errors/PresentationErrors.js";
+import TooManyRequestsError from "../errors/TooManyRequestsError.js";
 
 export default class RateLimitMiddleware {
     constructor({ redisClient }) {
@@ -24,9 +24,7 @@ export default class RateLimitMiddleware {
                             prefix: `rl:${prefix}:`,
                         }),
                         handler: (req, res, next) => {
-                            next(PresentationErrors.tooManyRequests({
-                                description: `Muitas requisições. Tente novamente em ${minutes} minutos.`
-                            }));
+                            next(new TooManyRequestsError({ originalError: `Limite de requisições excedido. Tente novamente em ${minutes} minutos.` }));
                         },
                     });
                 }

@@ -5,7 +5,7 @@ import userRouter from "./src/presentation/routes/user/UserRouter.js";
 import authRouter from "./src/presentation/routes/auth/AuthRouter.js";
 import ErrorHandlerMiddleware from "./src/presentation/middlewares/ErrorHandlerMiddleware.js";
 import rateLimit from "express-rate-limit";
-import PresentationErrors from "./src/presentation/errors/PresentationErrors.js";
+import RouteNotFoundError from "./src/presentation/errors/RouteNotFoundError.js";
 
 const app = express();
 
@@ -14,7 +14,7 @@ app.use(express.json({ limit: "10kb" }));
 
 const globalLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    limit: 100,
+    limit: 200,
     legacyHeaders: false,
 });
 
@@ -24,10 +24,7 @@ app.use("/v1", authRouter);
 app.use("/v1", userRouter);
 
 app.use((req, res, next) => {
-    next(PresentationErrors.notFound({
-        message: "Rota não encontrada",
-        description: `A rota ${req.method} ${req.originalUrl} não existe nesta API.`
-    }));
+    next(new RouteNotFoundError({ originalError: `Rota ${req.method} ${req.originalUrl} não encontrada` }));
 });
 
 app.use(ErrorHandlerMiddleware.execute);
