@@ -56,8 +56,7 @@ export default class LoginUseCase {
             refreshToken: refreshTokenEntity.token,
             user: {
                 id: user.id,
-                name: user.name.value,
-                email: user.email.value
+                name: user.name.value
             }
         });
     }
