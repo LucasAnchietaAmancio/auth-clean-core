@@ -1,30 +1,36 @@
 import UserRepository from "../../../../src/infra/db/repositories/UserRepository.js";
 import UserEntity from "../../../../src/domain/entities/UserEntity.js";
-import { jest } from "@jest/globals";
+import DatabaseError from "../../../../src/infra/errors/DatabaseError.js";
+import { describe, test, expect, jest } from "@jest/globals";
 
 describe("Testes de Infraestrutura: UserRepository", () => {
-    const dbMock = {
+    const prismaMock = {
         users: {
             create: jest.fn(),
             findUnique: jest.fn()
         }
     };
 
-    const sutUserRepository = new UserRepository({ db: dbMock });
+    const dbWrapperMock = {
+        getClient: jest.fn().mockResolvedValue(prismaMock)
+    };
+
+    const sutUserRepository = new UserRepository({ db: dbWrapperMock });
 
     const UserEntityExample = new UserEntity({
         name: "Lucas",
         email: "lucas@email.com",
-        password: "$2b$12$NygFN5roLN2CfhB3GUsWgO53sm7dgP3Y8zgMZcJCCND1HEtRposci"
+        password: "HashedPassword@123",
+        alreadyHashed: true
     });
 
     describe("Validação da implementação do método 'create':", () => {
         test("Deve criar um usuário no banco de dados, retornando a Entidade de Domínio", async () => {
-            dbMock.users.create.mockResolvedValue({
+            prismaMock.users.create.mockResolvedValue({
                 id_user: 1,
                 name: "Lucas",
                 email: "lucas@email.com",
-                password: "$2b$12$NygFN5roLN2CfhB3GUsWgO53sm7dgP3Y8zgMZcJCCND1HEtRposci",
+                password: "HashedPassword@123",
                 createdAt: "2024-10-27T10:00:00.000Z",
                 updatedAt: "2024-10-27T10:00:00.000Z"
             });
@@ -36,23 +42,21 @@ describe("Testes de Infraestrutura: UserRepository", () => {
             expect(result.email.value).toBe("lucas@email.com");
         });
 
-        test("Deve lançar um erro caso o usuário já exista", async () => {
-            dbMock.users.create.mockRejectedValue({
-                code: "P2002"
-            });
+        test("Deve lançar um DatabaseError caso o Prisma retorne erro", async () => {
+            prismaMock.users.create.mockRejectedValue(new Error("Prisma Error"));
 
             await expect(sutUserRepository.create({ user: UserEntityExample }))
-                .rejects.toThrow("Erro ao criar usuário");
+                .rejects.toThrow(DatabaseError);
         });
     });
 
     describe("Validação da implementação do método 'findByEmail':", () => {
         test("Deve buscar um usuário no banco de dados, retornando a Entidade de Domínio", async () => {
-            dbMock.users.findUnique.mockResolvedValue({
+            prismaMock.users.findUnique.mockResolvedValue({
                 id_user: 1,
                 name: "Lucas",
                 email: "lucas@email.com",
-                password: "$2b$12$NygFN5roLN2CfhB3GUsWgO53sm7dgP3Y8zgMZcJCCND1HEtRposci",
+                password: "HashedPassword@123",
                 createdAt: "2024-10-27T10:00:00.000Z",
                 updatedAt: "2024-10-27T10:00:00.000Z"
             });

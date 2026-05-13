@@ -1,14 +1,14 @@
-import RedisErrorTranslator from "./RedisErrorTranslator.js";
+import ConnectionRefused from "../../../infra/errors/ConnectionRefused.js";
 
 export default class RedisClient {
-    constructor({ createClientRedis }) {
+    constructor({ createClientRedis, envs }) {
         this.createClientRedis = createClientRedis;
-        this.url = process.env.REDIS_URL;
+        this.url = envs.db.redis.url;
         this.client = null;
     };
 
     async getClient() {
-        if (this.client && this.client.isOpen) {
+        if (this.client) {
             return this.client;
         }
 
@@ -30,11 +30,8 @@ export default class RedisClient {
 
         } catch (error) {
             this.client = null;
-
-            throw RedisErrorTranslator.translate({
-                error,
-                message: "Falha ao conectar ao Redis.",
-                description: "Não foi possível estabelecer conexão com o servidor Redis."
+            throw new ConnectionRefused({
+                originalError: error
             });
         }
     }

@@ -1,0 +1,17 @@
+# Tarefas de Refatoração Arquitetural
+
+## 1. Resolução do Vazamento de Abstração do Zod
+- [ ] Remover `ZodValidatorProvider.js`
+- [ ] Atualizar `makeValidationSchemaMiddleware.js` para importar os schemas e passá-los ao provider.
+- [ ] Atualizar `ValidationSchemaMiddleware.js` para receber `schemaName` no execute.
+- [ ] Modificar `UserRouter.js` e `AuthRouter.js` para usar `schemaName` (string) em vez do objeto Zod importado.
+
+## 2. Inversão Genuína no Error Handling (OCP)
+- [/] Modificar `AppError.js` para suportar '`type`.
+- [ ] Atualizar as classes filhas de `AppError` com seus devidos `type`.
+- [ ] Simplificar `ErrorHandlerMiddleware.js` para usar `err.type`.
+
+## 3. Refatoração de Value Objects Anêmicos
+- [ ] Modificar `PasswordValueObject.js` implementando `createPlain` e `createHashed`.
+- [ ] Remover `alreadyHashed` do construtor de `UserEntity.js` e `PasswordValueObject.js`.
+- [ ] Atualizar os Use Cases (como `CreateUserUseCase`) para usar os Factory Methods estáticos.

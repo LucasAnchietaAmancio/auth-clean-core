@@ -1,12 +1,19 @@
 export default class ValidationSchemaMiddleware {
-    static execute({ schema }) {
+    constructor({ validatorProvider }) {
+        this.validatorProvider = validatorProvider;
+    };
+
+    execute({ schema }) {
         return (req, res, next) => {
             try {
-                req.body = schema.parse(req.body);
+                req.body = this.validatorProvider.validate({
+                    value: req.body,
+                    schema
+                });
                 next();
             } catch (error) {
                 next(error);
             }
         };
-    }
+    };
 }

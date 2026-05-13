@@ -1,4 +1,4 @@
-import ApplicationErrors from "../../errors/ApplicationErrors.js";
+import InvalidCredentialsError from "../../errors/InvalidCredentialsError.js";
 import LoginResponseDTO from "../../dtos/auth/LoginResponseDTO.js";
 import RefreshTokenEntity from "../../../domain/entities/RefreshTokenEntity.js";
 
@@ -12,33 +12,16 @@ export default class LoginUseCase {
     }
 
     async execute({ loginRequestDTO }) {
-        if (!loginRequestDTO.email || !loginRequestDTO.password) {
-            throw ApplicationErrors.badRequest({
-                message: "E-mail e senha são obrigatórios",
-                description: "Por favor, insira um e-mail e senha para fazer login."
-            });
-        };
-
         const user = await this.userRepository.findAuthByEmail({ email: loginRequestDTO.email });
 
-        if (!user) {
-            throw ApplicationErrors.unauthorized({
-                message: "Credenciais inválidas",
-                description: "Email ou senha incorretos."
-            });
-        };
+        if (!user) throw new InvalidCredentialsError({ originalError: "Usuário não encontrado" });
 
         const passwordMatch = await this.hashProvider.compare({
             value: loginRequestDTO.password,
             hash: user.password.value
         });
 
-        if (!passwordMatch) {
-            throw ApplicationErrors.unauthorized({
-                message: "Credenciais inválidas",
-                description: "Email ou senha incorretos."
-            });
-        };
+        if (!passwordMatch) throw new InvalidCredentialsError({ originalError: "Senha inválida" });
 
         const accessToken = await this.tokenProvider.generateToken({
             payload: {

@@ -1,5 +1,6 @@
 import UserEntity from "../../../domain/entities/UserEntity.js";
-import ApplicationErrors from "../../errors/ApplicationErrors.js";
+import EmailAlreadyInUseError from "../../errors/EmailAlreadyInUseError.js";
+import InternalApplicationError from "../../errors/InternalApplicationError.js";
 import CreateUserResponseDTO from "../../dtos/user/CreateUserResponseDTO.js";
 
 export default class CreateUserUseCase {
@@ -9,6 +10,7 @@ export default class CreateUserUseCase {
     };
 
     async execute({ createUserRequestDTO }) {
+
         const user = new UserEntity({
             email: createUserRequestDTO.email,
             password: createUserRequestDTO.password,
@@ -17,21 +19,11 @@ export default class CreateUserUseCase {
 
         const emailUserAlreadyExists = await this.userRepository.findByEmail({ email: user.email.value });
 
-        if (emailUserAlreadyExists) {
-            throw ApplicationErrors.conflict({
-                message: "E-mail já cadastrado",
-                description: "O e-mail informado já está em uso por outra conta."
-            });
-        };
+        if (emailUserAlreadyExists) throw new EmailAlreadyInUseError({ originalError: "E-mail já está em uso" });
 
         const passwordHash = await this.hashProvider.hash({ value: user.password.value });
 
-        if (!passwordHash || passwordHash.length === 0) {
-            throw ApplicationErrors.internalError({
-                message: "Erro interno do servidor",
-                description: "Ocorreu um erro ao processar a sua senha."
-            });
-        };
+        if (!passwordHash || passwordHash.length === 0) throw new InternalApplicationError({ originalError: "Falha na geração do hash" });
 
         user.updatePassword({ hashedPassword: passwordHash });
 
@@ -43,4 +35,4 @@ export default class CreateUserUseCase {
             email: savedUser.email.value
         });
     };
-};
+};  

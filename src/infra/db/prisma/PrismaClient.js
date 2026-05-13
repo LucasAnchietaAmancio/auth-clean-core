@@ -1,5 +1,35 @@
-import { PrismaClient } from "@prisma/client";
+import ConnectionRefused from "../../../infra/errors/ConnectionRefused.js";
 
-const client = new PrismaClient();
+export default class PrismaClient {
+    constructor({ prismaClient, envs }) {
+        this.prismaClient = prismaClient;
+        this.url = envs.db.postgres.uri;
+        this.client = null;
+    }
 
-export default client;
+    async getClient() {
+        if (this.client) {
+            return this.client;
+        }
+
+        try {
+            this.client = new this.prismaClient({
+                datasources: {
+                    db: {
+                        url: this.url,
+                    },
+                },
+            });
+
+            await this.client.$connect();
+
+            return this.client;
+
+        } catch (error) {
+            this.client = null;
+            throw new ConnectionRefused({
+                originalError: error
+            });
+        }
+    }
+}
