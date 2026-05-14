@@ -17,11 +17,11 @@ describe("Testes de Infraestrutura: UserRepository", () => {
 
     const sutUserRepository = new UserRepository({ db: dbWrapperMock });
 
-    const UserEntityExample = new UserEntity({
+    const UserEntityExample = UserEntity.restore({
         name: "Lucas",
         email: "lucas@email.com",
-        password: "HashedPassword@123",
-        alreadyHashed: true
+        hashedPassword: "HashedPassword@123",
+        id: "id-qualquer"
     });
 
     describe("Validação da implementação do método 'create':", () => {

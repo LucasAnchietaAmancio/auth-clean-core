@@ -30,6 +30,7 @@ export default class ErrorHandlerMiddleware {
                 error: {
                     code: err.code,
                     message: err.message,
+                    category: err.category,
                     type: err.type,
                     timestamp: err.timestamp || new Date().toISOString(),
                     metadata: {

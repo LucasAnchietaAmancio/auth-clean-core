@@ -39,12 +39,11 @@ describe("Testes de Aplicação: LoginUseCase", () => {
         envs: envsMock
     });
 
-    const mockUserEntity = new UserEntity({
+    const mockUserEntity = UserEntity.restore({
         id: "id-valido",
         name: "Lucas Anchieta",
         email: "lucas@email.com",
-        password: "hashed_password",
-        alreadyHashed: true
+        hashedPassword: "hashed_password"
     });
 
     test("Deve retornar um LoginResponseDTO válido quando as credenciais estiverem corretas", async () => {
@@ -74,8 +73,7 @@ describe("Testes de Aplicação: LoginUseCase", () => {
         expect(refreshTokenRepositoryMock.create).toHaveBeenCalled();
         expect(result.user).toEqual({
             id: "id-valido",
-            name: "Lucas Anchieta",
-            email: "lucas@email.com"
+            name: "Lucas Anchieta"
         });
     });
 

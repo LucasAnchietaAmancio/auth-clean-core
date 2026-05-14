@@ -8,10 +8,11 @@
 
 ## 2. Inversão Genuína no Error Handling (OCP)
 - [/] Modificar `AppError.js` para suportar '`type`.
-- [ ] Atualizar as classes filhas de `AppError` com seus devidos `type`.
-- [ ] Simplificar `ErrorHandlerMiddleware.js` para usar `err.type`.
+- [/] Atualizar as classes filhas de `AppError` com seus devidos `type`.
+- [/] Simplificar `ErrorHandlerMiddleware.js` para usar `err.type`.
 
 ## 3. Refatoração de Value Objects Anêmicos
-- [ ] Modificar `PasswordValueObject.js` implementando `createPlain` e `createHashed`.
-- [ ] Remover `alreadyHashed` do construtor de `UserEntity.js` e `PasswordValueObject.js`.
-- [ ] Atualizar os Use Cases (como `CreateUserUseCase`) para usar os Factory Methods estáticos.
+- [/] Modificar `PasswordValueObject.js` implementando `create` e `restore`.
+- [/] Remover `alreadyHashed` do construtor de `UserEntity.js` e `PasswordValueObject.js`.
+- [/] Atualizar os Use Cases (como `CreateUserUseCase`) para usar os Factory Methods estáticos vindos das entidades.
+

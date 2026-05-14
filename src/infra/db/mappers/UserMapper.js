@@ -5,12 +5,11 @@ export default class UserMapper {
     static toDomain(userRecord) {
         if (!userRecord) return null;
 
-        return new UserEntity({
+        return UserEntity.restore({
             id: userRecord.id_user,
             name: userRecord.name,
             email: userRecord.email,
-            password: userRecord.password,
-            alreadyHashed: true
+            hashedPassword: userRecord.password
         });
     };
 
@@ -27,12 +26,11 @@ export default class UserMapper {
     static toAuth(userRecord) {
         if (!userRecord) return null;
 
-        return new UserEntity({
+        return UserEntity.restore({
             id: userRecord.id_user,
             email: userRecord.email,
             name: userRecord.name,
-            password: userRecord.password,
-            alreadyHashed: true
+            hashedPassword: userRecord.password
         });
     };
 };
