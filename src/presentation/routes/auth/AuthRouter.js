@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { makeValidationSchemaMiddleware } from "../../../main/factories/middlewares/makeValidationSchemaMiddleware.js";
-import { makeLoginController } from "../../../main/factories/controllers/auth/makeLoginController.js";
+import { makeLoginController } from "../../../main/factories/controllers/makeLoginController.js";
 import { makeRateLimitMiddleware } from "../../../main/factories/middlewares/makeRateLimitMiddleware.js";
 
 

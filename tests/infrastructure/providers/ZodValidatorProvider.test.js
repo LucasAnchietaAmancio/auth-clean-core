@@ -1,7 +1,7 @@
 import { describe, test, expect } from "@jest/globals";
 import { z } from "zod";
 import ZodValidatorProvider from "../../../src/infra/providers/schema/ZodValidatorProvider.js";
-import InvalidSchemaError from "../../../src/presentation/errors/InvalidSchemaError.js";
+import InvalidSchemaError from "../../../src/infra/errors/InvalidSchemaError.js";
 
 describe("Testes de Infraestrutura: ZodValidatorProvider", () => {
     const testSchema = z.object({

@@ -1,5 +1,3 @@
-import "dotenv/config";
-
 export default class Envs {
     constructor() {
         this.db = {

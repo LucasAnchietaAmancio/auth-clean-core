@@ -1,5 +1,6 @@
 import ISchemaProvider from "../../../domain/contracts/providers/ISchemaProvider.js";
-import InvalidSchemaError from "../../../presentation/errors/InvalidSchemaError.js";
+import InvalidSchemaError from "../../errors/InvalidSchemaError.js";
+import InternalServerError from "../../errors/InternalServerError.js";
 
 export default class ZodValidatorProvider extends ISchemaProvider {
     constructor({ catalog }) {
@@ -11,8 +12,8 @@ export default class ZodValidatorProvider extends ISchemaProvider {
         const schema = this.catalog[schemaName];
 
         if (!schema) {
-            throw new InvalidSchemaError({
-                originalError: "Schema não encontrado no catálogo."
+            throw new InternalServerError({
+                originalError: "Schema não encontrado no catálogo, para fazer a validação de entrada."
             });
         }
 

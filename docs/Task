@@ -19,3 +19,6 @@
 
 ## 4. Modelo de segurança
 - [ ] Adicionar a comunicação de tokens via cookie, sem passar pelo body da aplicação
+
+## 5. Desacoplamentos
+- [ ]  Singleton / Composition Root no server para desacoplar a classe envs do server
