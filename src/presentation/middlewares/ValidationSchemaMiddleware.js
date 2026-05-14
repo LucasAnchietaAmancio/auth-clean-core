@@ -3,12 +3,12 @@ export default class ValidationSchemaMiddleware {
         this.validatorProvider = validatorProvider;
     };
 
-    execute({ schema }) {
+    execute({ schemaName }) {
         return (req, res, next) => {
             try {
                 req.body = this.validatorProvider.validate({
                     value: req.body,
-                    schema
+                    schemaName
                 });
                 next();
             } catch (error) {
