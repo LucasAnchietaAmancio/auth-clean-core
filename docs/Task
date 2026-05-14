@@ -1,5 +1,6 @@
 # Tarefas de Refatoração Arquitetural
 
+
 ## 1. Resolução do Vazamento de Abstração do Zod
 - [ ] Remover `ZodValidatorProvider.js`
 - [ ] Atualizar `makeValidationSchemaMiddleware.js` para importar os schemas e passá-los ao provider.
@@ -16,3 +17,5 @@
 - [/] Remover `alreadyHashed` do construtor de `UserEntity.js` e `PasswordValueObject.js`.
 - [/] Atualizar os Use Cases (como `CreateUserUseCase`) para usar os Factory Methods estáticos vindos das entidades.
 
+## 4. Modelo de segurança
+- [ ] Adicionar a comunicação de tokens via cookie, sem passar pelo body da aplicação

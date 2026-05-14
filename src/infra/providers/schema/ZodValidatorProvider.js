@@ -1,5 +1,5 @@
 import ISchemaProvider from "../../../domain/contracts/providers/ISchemaProvider.js";
-import InvalidSchemaError from "../../../shared/errors/InvalidSchemaError.js";
+import InvalidSchemaError from "../../../presentation/errors/InvalidSchemaError.js";
 
 export default class ZodValidatorProvider extends ISchemaProvider {
     constructor({ catalog }) {
