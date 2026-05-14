@@ -7,8 +7,8 @@ export default class UserRouter {
     }
 
     init() {
-        this.router.post("/register", 
-            this.rateLimit.execute({ limit: 5, minutes: 15, prefix: "register" }), 
+        this.router.post("/user/register",
+            this.rateLimit.execute({ limit: 5, minutes: 15, prefix: "register" }),
             this.validateSchema.execute({ schemaName: "USER_REGISTER" }),
             (req, res, next) => this.controller.handle(req, res, next)
         );
