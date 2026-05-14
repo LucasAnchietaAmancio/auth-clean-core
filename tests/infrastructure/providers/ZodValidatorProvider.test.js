@@ -2,6 +2,7 @@ import { describe, test, expect } from "@jest/globals";
 import { z } from "zod";
 import ZodValidatorProvider from "../../../src/infra/providers/schema/ZodValidatorProvider.js";
 import InvalidSchemaError from "../../../src/infra/errors/InvalidSchemaError.js";
+import InternalServerError from "../../../src/infra/errors/InternalServerError.js";
 
 describe("Testes de Infraestrutura: ZodValidatorProvider", () => {
     const testSchema = z.object({
@@ -29,9 +30,9 @@ describe("Testes de Infraestrutura: ZodValidatorProvider", () => {
         }).toThrow(InvalidSchemaError);
     });
 
-    test("Deve lançar erro caso o schemaName não exista no catálogo", () => {
+    test("Deve lançar InternalServerError caso o schemaName não exista no catálogo", () => {
         expect(() => {
             sut.validate({ value: {}, schemaName: "NON_EXISTENT" });
-        }).toThrow(InvalidSchemaError);
+        }).toThrow(InternalServerError);
     });
 });

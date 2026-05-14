@@ -1,18 +1,18 @@
-import { Router } from "express";
-import { makeValidationSchemaMiddleware } from "../../../main/factories/middlewares/makeValidationSchemaMiddleware.js";
-import { makeLoginController } from "../../../main/factories/controllers/makeLoginController.js";
-import { makeRateLimitMiddleware } from "../../../main/factories/middlewares/makeRateLimitMiddleware.js";
-
-
-const router = Router();
-const rateLimit = makeRateLimitMiddleware();
-const validateSchema = makeValidationSchemaMiddleware();
-const controller = makeLoginController();
-
-router.post("/login", rateLimit.execute({ limit: 10, minutes: 1, prefix: "login" }), validateSchema.execute({ schemaName: "USER_LOGIN" }),
-    (req, res, next) => {
-        return controller.handle(req, res, next);
+export default class AuthRouter {
+    constructor({ router, rateLimit, validateSchema, controller }) {
+        this.router = router;
+        this.rateLimit = rateLimit;
+        this.validateSchema = validateSchema;
+        this.controller = controller;
     }
-);
 
-export default router;
+    init() {
+        this.router.post("/login", 
+            this.rateLimit.execute({ limit: 10, minutes: 1, prefix: "login" }), 
+            this.validateSchema.execute({ schemaName: "USER_LOGIN" }),
+            (req, res, next) => this.controller.handle(req, res, next)
+        );
+
+        return this.router;
+    }
+}

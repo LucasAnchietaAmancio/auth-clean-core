@@ -1,32 +1,24 @@
 import UserRepository from "../../../infra/db/repositories/UserRepository.js";
 import BcryptHashProvider from "../../../infra/providers/hash/BcryptHashProvider.js";
-import LoginController from "../../../presentation/controllers/auth/LoginController.js";
-import LoginUseCase from "../../../application/use-cases/auth/LoginUseCase.js";
 import JwtTokenProvider from "../../../infra/providers/token/JwtTokenProvider.js";
-import crypto from "crypto";
-import jwt from "jsonwebtoken";
-import { PrismaClient } from "@prisma/client";
-import PrismaClientWrapper from "../../../infra/db/prisma/PrismaClient.js";
-import bcrypt from "bcrypt";
 import RefreshTokenRepository from "../../../infra/db/repositories/RefreshTokenRepository.js";
-import Envs from "../../../main/config/env.js";
+import LoginUseCase from "../../../application/use-cases/auth/LoginUseCase.js";
+import LoginController from "../../../presentation/controllers/auth/LoginController.js";
+import bcrypt from "bcrypt";
 
-export const makeLoginController = () => {
-    const envs = new Envs();
-
-    const prismaClientInstance = new PrismaClientWrapper({ prismaClient: PrismaClient, envs });
-
-    const userRepository = new UserRepository({ db: prismaClientInstance });
-
+export const makeLoginController = ({ envs, db }) => {
+    const userRepository = new UserRepository({ db });
     const hashProvider = new BcryptHashProvider({ bcrypt, envs });
+    const tokenProvider = new JwtTokenProvider({ envs });
+    const refreshTokenRepository = new RefreshTokenRepository({ db });
 
-    const refreshTokenRepository = new RefreshTokenRepository({ db: prismaClientInstance });
+    const loginUseCase = new LoginUseCase({ 
+        userRepository, 
+        hashProvider, 
+        tokenProvider, 
+        refreshTokenRepository, 
+        envs 
+    });
 
-    const tokenProvider = new JwtTokenProvider({ jwt, crypto, envs });
-
-    const loginUseCase = new LoginUseCase({ userRepository, hashProvider, tokenProvider, refreshTokenRepository, envs });
-
-    const loginController = new LoginController({ loginUseCase });
-
-    return loginController;
+    return new LoginController({ loginUseCase });
 };
