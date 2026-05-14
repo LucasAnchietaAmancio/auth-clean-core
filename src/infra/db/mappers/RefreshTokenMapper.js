@@ -4,7 +4,7 @@ export default class RefreshTokenMapper {
     static toDomain(refreshTokenRecord) {
         if (!refreshTokenRecord) return null;
 
-        return new RefreshTokenEntity({
+        return RefreshTokenEntity.restore({
             id: refreshTokenRecord.id_refresh_token,
             userId: refreshTokenRecord.userId,
             token: refreshTokenRecord.token,

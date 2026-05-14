@@ -5,7 +5,6 @@ export default class LoginResponseDTO {
         this.user = {
             id: user.id,
             name: user.name,
-            email: user.email
         };
     }
 }

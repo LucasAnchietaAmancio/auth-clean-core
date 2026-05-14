@@ -12,10 +12,10 @@ describe("Testes de Domínio: UserEntity", () => {
         password: "LucasAnchieta@2025"
     };
 
-    describe("Validação da implementação do método 'constructor':", () => {
+    describe("Validação da implementação do método 'create':", () => {
         test("Deve criar uma entidade de usuário válida, retornando a instância sem erros", () => {
             expect(() => {
-                new UserEntity(dataValid);
+                UserEntity.create(dataValid);
             }).not.toThrow();
         });
     });
@@ -23,51 +23,51 @@ describe("Testes de Domínio: UserEntity", () => {
     describe("Validação da implementação do campo 'email':", () => {
 
         test("Deve lançar InvalidEmailError caso o email não tenha @", () => {
-            expect(() => new UserEntity({ ...dataValid, email: "lucas.gmail.com" }))
+            expect(() => UserEntity.create({ ...dataValid, email: "lucas.gmail.com" }))
                 .toThrow(InvalidEmailError);
         });
 
         test("Deve lançar InvalidEmailError caso o email não tenha .", () => {
-            expect(() => new UserEntity({ ...dataValid, email: "lucas@gmailcom" }))
+            expect(() => UserEntity.create({ ...dataValid, email: "lucas@gmailcom" }))
                 .toThrow(InvalidEmailError);
         });
 
         test("Deve lançar InvalidEmailError caso o email esteja mal formado", () => {
-            expect(() => new UserEntity({ ...dataValid, email: "@gmail.com" }))
+            expect(() => UserEntity.create({ ...dataValid, email: "@gmail.com" }))
                 .toThrow(InvalidEmailError);
         });
 
         test("Deve lançar InvalidEmailError caso o email seja null ou vazio", () => {
-            expect(() => new UserEntity({ ...dataValid, email: null }))
+            expect(() => UserEntity.create({ ...dataValid, email: null }))
                 .toThrow(InvalidEmailError);
-            expect(() => new UserEntity({ ...dataValid, email: "" }))
+            expect(() => UserEntity.create({ ...dataValid, email: "" }))
                 .toThrow(InvalidEmailError);
         });
     });
 
     describe("Validação da implementação do campo 'name':", () => {
         test("Deve lançar InvalidNameError caso o nome seja inválido", () => {
-            expect(() => new UserEntity({ ...dataValid, name: "jo" }))
+            expect(() => UserEntity.create({ ...dataValid, name: "jo" }))
                 .toThrow(InvalidNameError);
-            expect(() => new UserEntity({ ...dataValid, name: null }))
+            expect(() => UserEntity.create({ ...dataValid, name: null }))
                 .toThrow(InvalidNameError);
         });
     });
 
     describe("Validação da implementação do campo 'password':", () => {
         test("Deve lançar InvalidPasswordError para senhas que não seguem o padrão de segurança", () => {
-            expect(() => new UserEntity({ ...dataValid, password: "123" }))
+            expect(() => UserEntity.create({ ...dataValid, password: "123" }))
                 .toThrow(InvalidPasswordError);
-            expect(() => new UserEntity({ ...dataValid, password: "lucasanchieta@2025" }))
+            expect(() => UserEntity.create({ ...dataValid, password: "lucasanchieta@2025" }))
                 .toThrow(InvalidPasswordError);
-            expect(() => new UserEntity({ ...dataValid, password: "LucasAnchieta2025" }))
+            expect(() => UserEntity.create({ ...dataValid, password: "LucasAnchieta2025" }))
                 .toThrow(InvalidPasswordError);
         });
 
         test("Deve lançar InvalidPasswordError caso a senha seja null ou vazia", () => {
-            expect(() => new UserEntity({ ...dataValid, password: null }))
+            expect(() => UserEntity.create({ ...dataValid, password: null }))
                 .toThrow(InvalidPasswordError);
-            expect(() => new UserEntity({ ...dataValid, password: "" }))
+            expect(() => UserEntity.create({ ...dataValid, password: "" }))
                 .toThrow(InvalidPasswordError);
         });
     });

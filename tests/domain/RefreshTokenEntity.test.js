@@ -10,15 +10,15 @@ describe("Testes de Domínio: RefreshTokenEntity", () => {
         expiresAt: expiresAtValid
     };
 
-    describe("Validação da implementação do método 'constructor':", () => {
+    describe("Validação da implementação do método 'create':", () => {
         test("Deve criar uma entidade de refresh token válida, retornando a instância sem erros", () => {
             expect(() => {
-                new RefreshTokenEntity(dataValid);
+                RefreshTokenEntity.create(dataValid);
             }).not.toThrow();
         });
 
-        test("Deve garantir que os dados atribuídos no constructor estão corretos", () => {
-            const refreshToken = new RefreshTokenEntity(dataValid);
+        test("Deve garantir que os dados atribuídos no create estão corretos", () => {
+            const refreshToken = RefreshTokenEntity.create(dataValid);
             expect(refreshToken.userId).toBe(dataValid.userId);
             expect(refreshToken.token).toBe(dataValid.token);
             expect(refreshToken.jti).toBe(dataValid.jti);
@@ -28,13 +28,13 @@ describe("Testes de Domínio: RefreshTokenEntity", () => {
 
     describe("Validação da implementação do método 'isExpired':", () => {
         test("Deve retornar falso caso o token ainda não tenha expirado", () => {
-            const refreshToken = new RefreshTokenEntity(dataValid);
+            const refreshToken = RefreshTokenEntity.create(dataValid);
             expect(refreshToken.isExpired()).toBe(false);
         });
 
         test("Deve retornar verdadeiro caso o token já tenha expirado", () => {
             const expiresAtPast = Math.floor(Date.now() / 1000) - 1000;
-            const refreshToken = new RefreshTokenEntity({ 
+            const refreshToken = RefreshTokenEntity.create({ 
                 ...dataValid, 
                 expiresAt: expiresAtPast 
             });

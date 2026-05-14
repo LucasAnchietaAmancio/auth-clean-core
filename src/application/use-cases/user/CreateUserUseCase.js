@@ -11,7 +11,7 @@ export default class CreateUserUseCase {
 
     async execute({ createUserRequestDTO }) {
 
-        const user = new UserEntity({
+        const user = UserEntity.create({
             email: createUserRequestDTO.email,
             password: createUserRequestDTO.password,
             name: createUserRequestDTO.name
@@ -21,11 +21,11 @@ export default class CreateUserUseCase {
 
         if (emailUserAlreadyExists) throw new EmailAlreadyInUseError({ originalError: "E-mail já está em uso" });
 
-        const passwordHash = await this.hashProvider.hash({ value: user.password.value });
+        const hashedPassword = await this.hashProvider.hash({ value: user.password.value });
 
-        if (!passwordHash || passwordHash.length === 0) throw new InternalApplicationError({ originalError: "Falha na geração do hash" });
+        if (!hashedPassword || hashedPassword.length === 0) throw new InternalApplicationError({ originalError: "Falha na geração do hash" });
 
-        user.updatePassword({ hashedPassword: passwordHash });
+        user.updatePassword({ hashedPassword });
 
         const savedUser = await this.userRepository.create({ user });
 

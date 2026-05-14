@@ -5,9 +5,11 @@ import userRouter from "./src/presentation/routes/user/UserRouter.js";
 import authRouter from "./src/presentation/routes/auth/AuthRouter.js";
 import ErrorHandlerMiddleware from "./src/presentation/middlewares/ErrorHandlerMiddleware.js";
 import rateLimit from "express-rate-limit";
+import Envs from "./src/main/config/env.js";
 import RouteNotFoundError from "./src/presentation/errors/RouteNotFoundError.js";
 
 const app = express();
+const envs = new Envs();
 
 app.use(cors());
 app.use(express.json({ limit: "10kb" }));
@@ -29,8 +31,6 @@ app.use((req, res, next) => {
 
 app.use(ErrorHandlerMiddleware.execute);
 
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+app.listen(envs.server.port, () => {
+    console.log(`Server running on port ${envs.server.port}`);
 });

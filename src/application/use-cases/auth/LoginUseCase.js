@@ -1,6 +1,7 @@
 import InvalidCredentialsError from "../../errors/InvalidCredentialsError.js";
 import LoginResponseDTO from "../../dtos/auth/LoginResponseDTO.js";
 import RefreshTokenEntity from "../../../domain/entities/RefreshTokenEntity.js";
+import InternalApplicationError from "../../errors/InternalApplicationError.js";
 
 export default class LoginUseCase {
     constructor({ userRepository, hashProvider, tokenProvider, refreshTokenRepository, envs }) {
@@ -47,17 +48,20 @@ export default class LoginUseCase {
             expiresAt: decoded.exp
         });
 
-        await this.refreshTokenRepository.create({
+        const refreshTokenSaved = await this.refreshTokenRepository.create({
             refreshTokenEntity: refreshTokenEntity
         });
+
+        if (!refreshTokenSaved) {
+            throw new InternalApplicationError({ originalError: "Falha no armazenamento do refresh token" });
+        }
 
         return new LoginResponseDTO({
             accessToken: accessToken,
             refreshToken: refreshTokenEntity.token,
             user: {
                 id: user.id,
-                name: user.name.value,
-                email: user.email.value
+                name: user.name.value
             }
         });
     }
