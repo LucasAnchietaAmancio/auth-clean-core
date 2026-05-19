@@ -8,35 +8,26 @@ import InvalidCredentialsError from "../../../../src/application/errors/InvalidC
 describe("Testes de Aplicação: LoginUseCase", () => {
 
     const userRepositoryMock = {
-        findAuthByEmail: jest.fn(),
+        findByEmail: jest.fn(),
     };
 
-    const refreshTokenRepositoryMock = {
-        create: jest.fn(),
+    const sessionTokenServiceMock = {
+        generateSessionTokens: jest.fn(),
     };
 
     const hashProviderMock = {
         compare: jest.fn(),
     };
 
-    const tokenProviderMock = {
-        generateToken: jest.fn(),
-        decodeToken: jest.fn(),
-    };
-
-    const envsMock = {
-        jwt: {
-            accessTokenExpiresIn: "1h",
-            refreshTokenExpiresIn: "7d"
-        }
-    };
+    const tokenProviderMock = {};
+    const sessionRepositoryMock = {};
 
     const sutLoginUseCase = new LoginUseCase({
         userRepository: userRepositoryMock,
-        refreshTokenRepository: refreshTokenRepositoryMock,
         hashProvider: hashProviderMock,
+        sessionTokenService: sessionTokenServiceMock,
         tokenProvider: tokenProviderMock,
-        envs: envsMock
+        sessionRepository: sessionRepositoryMock,
     });
 
     const mockUserEntity = UserEntity.restore({
@@ -47,18 +38,12 @@ describe("Testes de Aplicação: LoginUseCase", () => {
     });
 
     test("Deve retornar um LoginResponseDTO válido quando as credenciais estiverem corretas", async () => {
-        userRepositoryMock.findAuthByEmail.mockResolvedValue(mockUserEntity);
+        userRepositoryMock.findByEmail.mockResolvedValue(mockUserEntity);
         hashProviderMock.compare.mockResolvedValue(true);
-        tokenProviderMock.generateToken
-            .mockResolvedValueOnce("access-token")
-            .mockResolvedValueOnce("refresh-token");
-
-        tokenProviderMock.decodeToken.mockResolvedValue({
-            jti: "jti-mock",
-            exp: 9999999999
+        sessionTokenServiceMock.generateSessionTokens.mockResolvedValue({
+            accessToken: "access-token",
+            refreshToken: "refresh-token"
         });
-
-        refreshTokenRepositoryMock.create.mockResolvedValue({});
 
         const loginRequestDTO = new LoginRequestDTO({
             email: "lucas@email.com",
@@ -70,7 +55,10 @@ describe("Testes de Aplicação: LoginUseCase", () => {
         expect(result).toBeInstanceOf(LoginResponseDTO);
         expect(result.accessToken).toBe("access-token");
         expect(result.refreshToken).toBe("refresh-token");
-        expect(refreshTokenRepositoryMock.create).toHaveBeenCalled();
+        expect(sessionTokenServiceMock.generateSessionTokens).toHaveBeenCalledWith({
+            userId: "id-valido",
+            email: "lucas@email.com"
+        });
         expect(result.user).toEqual({
             id: "id-valido",
             name: "Lucas Anchieta"
@@ -78,7 +66,7 @@ describe("Testes de Aplicação: LoginUseCase", () => {
     });
 
     test("Deve lançar InvalidCredentialsError quando o usuário não for encontrado", async () => {
-        userRepositoryMock.findAuthByEmail.mockResolvedValue(null);
+        userRepositoryMock.findByEmail.mockResolvedValue(null);
 
         const loginRequestDTO = new LoginRequestDTO({
             email: "inexistente@email.com",
@@ -90,7 +78,7 @@ describe("Testes de Aplicação: LoginUseCase", () => {
     });
 
     test("Deve lançar InvalidCredentialsError quando a senha estiver incorreta", async () => {
-        userRepositoryMock.findAuthByEmail.mockResolvedValue(mockUserEntity);
+        userRepositoryMock.findByEmail.mockResolvedValue(mockUserEntity);
         hashProviderMock.compare.mockResolvedValue(false);
 
         const loginRequestDTO = new LoginRequestDTO({

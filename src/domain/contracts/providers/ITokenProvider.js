@@ -1,10 +1,18 @@
 
 export default class ITokenProvider {
-    async generateToken({ payload, expires }) {
+    async generateAccessToken({ payload, expires }) {
         throw new Error("Método não implementado");
     };
 
-    async verifyToken({ token }) {
+    async generateRefreshToken({ payload, expires }) {
+        throw new Error("Método não implementado");
+    };
+
+    async verifyAccessToken({ accessToken }) {
+        throw new Error("Método não implementado");
+    };
+
+    async verifyRefreshToken({ refreshToken }) {
         throw new Error("Método não implementado");
     };
 

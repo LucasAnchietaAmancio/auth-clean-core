@@ -1,6 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 import RedisStore from "rate-limit-redis";
 import { PrismaClient } from "@prisma/client";
@@ -24,7 +25,8 @@ const appConfig = new AppConfig({
     redisClient,
     cors,
     rateLimit,
-    redisStore: RedisStore
+    redisStore: RedisStore,
+    cookieParser
 });
 
 appConfig.init();

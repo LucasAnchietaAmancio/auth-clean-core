@@ -1,17 +1,17 @@
-import LoginRequestDTO from "../../../application/dtos/auth/LoginRequestDTO.js";
+import RotationSessionRequestDTO from "../../../application/dtos/auth/RotationSessionRequestDTO.js";
 
-export default class LoginController {
-    constructor({ loginUseCase, envs }) {
-        this.loginUseCase = loginUseCase;
+export default class RotationSessionController {
+    constructor({ rotationSessionUseCase, envs }) {
+        this.rotationSessionUseCase = rotationSessionUseCase;
         this.envs = envs;
     }
 
     async handle(req, res, next) {
         try {
-            const { email, password } = req.body;
-            const loginRequestDTO = new LoginRequestDTO({ email, password });
+            const refreshToken = req.cookies?.refreshToken;
+            const rotationSessionRequestDTO = new RotationSessionRequestDTO({ refreshToken });
 
-            const result = await this.loginUseCase.execute({ loginRequestDTO });
+            const result = await this.rotationSessionUseCase.execute({ rotationSessionRequestDTO });
 
             const accessTokenMaxAge = this.envs?.jwt?.accessTokenCookieMaxAgeMs || 15 * 60 * 1000;
             const refreshTokenMaxAge = this.envs?.jwt?.refreshTokenCookieMaxAgeMs || 7 * 24 * 60 * 60 * 1000;
@@ -32,7 +32,7 @@ export default class LoginController {
 
             return res.status(200).json({
                 success: true,
-                message: "Login realizado com sucesso",
+                message: "Sessão rotacionada com sucesso",
                 user: result.user
             });
 

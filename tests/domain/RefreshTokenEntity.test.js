@@ -1,6 +1,6 @@
-import RefreshTokenEntity from "../../src/domain/entities/RefreshTokenEntity.js";
+import SessionEntity from "../../src/domain/entities/SessionEntity.js";
 
-describe("Testes de Domínio: RefreshTokenEntity", () => {
+describe("Testes de Domínio: SessionEntity", () => {
     const expiresAtValid = Math.floor(Date.now() / 1000) + 1000;
     
     let dataValid = {
@@ -11,34 +11,32 @@ describe("Testes de Domínio: RefreshTokenEntity", () => {
     };
 
     describe("Validação da implementação do método 'create':", () => {
-        test("Deve criar uma entidade de refresh token válida, retornando a instância sem erros", () => {
+        test("Deve criar uma entidade de sessão válida, retornando a instância sem erros", () => {
             expect(() => {
-                RefreshTokenEntity.create(dataValid);
+                SessionEntity.create(dataValid);
             }).not.toThrow();
         });
 
         test("Deve garantir que os dados atribuídos no create estão corretos", () => {
-            const refreshToken = RefreshTokenEntity.create(dataValid);
-            expect(refreshToken.userId).toBe(dataValid.userId);
-            expect(refreshToken.token).toBe(dataValid.token);
-            expect(refreshToken.jti).toBe(dataValid.jti);
-            expect(refreshToken.expiresAt).toBe(dataValid.expiresAt);
+            const session = SessionEntity.create(dataValid);
+            expect(session.userId).toBe(dataValid.userId);
+            expect(session.token).toBe(dataValid.token);
+            expect(session.jti).toBe(dataValid.jti);
+            expect(session.expiresAt).toBe(dataValid.expiresAt);
         });
     });
 
-    describe("Validação da implementação do método 'isExpired':", () => {
-        test("Deve retornar falso caso o token ainda não tenha expirado", () => {
-            const refreshToken = RefreshTokenEntity.create(dataValid);
-            expect(refreshToken.isExpired()).toBe(false);
+    describe("Validação da implementação do método 'restore':", () => {
+        test("Deve restaurar uma entidade de sessão com id", () => {
+            const session = SessionEntity.restore({ id: 1, ...dataValid });
+            expect(session.id).toBe(1);
+            expect(session.userId).toBe(dataValid.userId);
         });
 
-        test("Deve retornar verdadeiro caso o token já tenha expirado", () => {
-            const expiresAtPast = Math.floor(Date.now() / 1000) - 1000;
-            const refreshToken = RefreshTokenEntity.create({ 
-                ...dataValid, 
-                expiresAt: expiresAtPast 
-            });
-            expect(refreshToken.isExpired()).toBe(true);
+        test("Deve lançar erro ao restaurar com dados insuficientes", () => {
+            expect(() => {
+                SessionEntity.restore({ id: 1, userId: 1 });
+            }).toThrow();
         });
     });
 });

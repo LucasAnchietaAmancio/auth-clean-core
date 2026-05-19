@@ -4,7 +4,7 @@ export default class InternalServerError extends AppError {
     constructor({ originalError }) {
         super({
             code: "INTERNAL_SERVER_ERROR",
-            category: "SYSTEM ",
+            category: "SYSTEM",
             severity: "HIGH",
             type: "INTERNAL",
             message: "Erro interno do servidor",

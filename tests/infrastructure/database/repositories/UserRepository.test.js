@@ -24,7 +24,7 @@ describe("Testes de Infraestrutura: UserRepository", () => {
         id: "id-qualquer"
     });
 
-    describe("Validação da implementação do método 'create':", () => {
+    describe("Validação da implementação do método 'save':", () => {
         test("Deve criar um usuário no banco de dados, retornando a Entidade de Domínio", async () => {
             prismaMock.users.create.mockResolvedValue({
                 id_user: 1,
@@ -35,7 +35,7 @@ describe("Testes de Infraestrutura: UserRepository", () => {
                 updatedAt: "2024-10-27T10:00:00.000Z"
             });
 
-            const result = await sutUserRepository.create({ user: UserEntityExample });
+            const result = await sutUserRepository.save({ user: UserEntityExample });
 
             expect(result).toBeInstanceOf(UserEntity);
             expect(result.id).toBe(1);
@@ -45,7 +45,7 @@ describe("Testes de Infraestrutura: UserRepository", () => {
         test("Deve lançar um DatabaseError caso o Prisma retorne erro", async () => {
             prismaMock.users.create.mockRejectedValue(new Error("Prisma Error"));
 
-            await expect(sutUserRepository.create({ user: UserEntityExample }))
+            await expect(sutUserRepository.save({ user: UserEntityExample }))
                 .rejects.toThrow(DatabaseError);
         });
     });

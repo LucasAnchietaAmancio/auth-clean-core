@@ -2,10 +2,9 @@
 
 
 ## 1. Resolução do Vazamento de Abstração do Zod
-- [ ] Remover `ZodValidatorProvider.js`
-- [ ] Atualizar `makeValidationSchemaMiddleware.js` para importar os schemas e passá-los ao provider.
-- [ ] Atualizar `ValidationSchemaMiddleware.js` para receber `schemaName` no execute.
-- [ ] Modificar `UserRouter.js` e `AuthRouter.js` para usar `schemaName` (string) em vez do objeto Zod importado.
+- [/] Atualizar `makeValidationSchemaMiddleware.js` para importar os schemas e passá-los ao provider.
+- [/] Atualizar `ValidationSchemaMiddleware.js` para receber `schemaName` no execute.
+- [/] Modificar `UserRouter.js` e `AuthRouter.js` para usar `schemaName` (string) em vez do objeto Zod importado.
 
 ## 2. Inversão Genuína no Error Handling (OCP)
 - [/] Modificar `AppError.js` para suportar '`type`.
@@ -18,7 +17,7 @@
 - [/] Atualizar os Use Cases (como `CreateUserUseCase`) para usar os Factory Methods estáticos vindos das entidades.
 
 ## 4. Modelo de segurança
-- [ ] Adicionar a comunicação de tokens via cookie, sem passar pelo body da aplicação
-
+- [/] Adicionar a comunicação de tokens via cookie, sem passar pelo body da aplicação
+- [/] Verificar se o usuario tem uma sessão ativa antes de aprovar o login
 ## 5. Desacoplamentos
-- [ ]  Composition Root no server para desacoplar a classe envs do server
+- [/]  Composition Root no server para desacoplar a classe envs do server

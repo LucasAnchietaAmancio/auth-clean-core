@@ -1,4 +1,4 @@
-import TooManyRequestsError from "../errors/TooManyRequestsError.js";
+import TooManyRequestsError from "../../errors/TooManyRequestsError.js";
 
 export default class RateLimitMiddleware {
     constructor({ redisClient, rateLimit, redisStore }) {

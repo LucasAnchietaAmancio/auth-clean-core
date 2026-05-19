@@ -1,4 +1,5 @@
 import AppError from "../../shared/errors/AppError.js";
+
 export default class ErrorHandlerMiddleware {
     static execute(err, req, res, next) {
 
@@ -14,6 +15,7 @@ export default class ErrorHandlerMiddleware {
             "INTERNAL": 500,
             "UNAVAILABLE": 503
         };
+
         if (err instanceof AppError) {
             const statusCode = typeToStatus[err.type] || 500;
             console.error(`\n[SERVICE ERROR] ${req.method} ${req.originalUrl}`);

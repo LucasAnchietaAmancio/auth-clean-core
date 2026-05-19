@@ -9,7 +9,7 @@ describe("Testes de Aplicação: CreateUserUseCase", () => {
 
     const userRepositoryMock = {
         findByEmail: jest.fn(),
-        create: jest.fn(),
+        save: jest.fn(),
     };
 
     const hashProviderMock = {
@@ -30,7 +30,7 @@ describe("Testes de Aplicação: CreateUserUseCase", () => {
     test("Deve criar um usuário com sucesso", async () => {
         userRepositoryMock.findByEmail.mockResolvedValue(null);
         hashProviderMock.hash.mockResolvedValue("hashed_password");
-        userRepositoryMock.create.mockResolvedValue({
+        userRepositoryMock.save.mockResolvedValue({
             id: "id-gerado",
             name: { value: "Novo Usuário" },
             email: { value: "novo@email.com" }
@@ -40,7 +40,7 @@ describe("Testes de Aplicação: CreateUserUseCase", () => {
 
         expect(result).toBeInstanceOf(CreateUserResponseDTO);
         expect(result.id).toBe("id-gerado");
-        expect(userRepositoryMock.create).toHaveBeenCalled();
+        expect(userRepositoryMock.save).toHaveBeenCalled();
     });
 
     test("Deve lançar EmailAlreadyInUseError quando o e-mail já estiver cadastrado", async () => {

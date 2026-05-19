@@ -5,17 +5,17 @@ export default class JwtTokenProvider extends ITokenProvider {
     constructor({ jwt, crypto, envs }) {
         super();
         this.jwt = jwt;
-        this.secretKey = envs.jwt.secretKey;
+        this.secretKey = envs.jwt;
         this.crypto = crypto;
     }
 
-    async generateToken({ payload, expires }) {
+    async generateAccessToken({ payload, expires }) {
         try {
             const tokenPayload = {
                 ...payload,
                 jti: this.crypto.randomUUID(),
             };
-            return this.jwt.sign(tokenPayload, this.secretKey, { expiresIn: expires });
+            return this.jwt.sign(tokenPayload, this.secretKey.acessSecretKey, { expiresIn: expires });
         } catch (error) {
             throw TokenError.handle({
                 error,
@@ -24,13 +24,39 @@ export default class JwtTokenProvider extends ITokenProvider {
         };
     };
 
-    async verifyToken({ token }) {
+    async generateRefreshToken({ payload, expires }) {
         try {
-            return this.jwt.verify(token, this.secretKey);
+            const tokenPayload = {
+                ...payload,
+                jti: this.crypto.randomUUID(),
+            };
+            return this.jwt.sign(tokenPayload, this.secretKey.refreshSecretKey, { expiresIn: expires });
         } catch (error) {
             throw TokenError.handle({
                 error,
-                message: "As credenciais fornecidas são inválidas ou expiraram.",
+                message: "Não foi possível gerar as credenciais de atualização no momento.",
+            });
+        };
+    };
+
+    async verifyAccessToken({ accessToken }) {
+        try {
+            return this.jwt.verify(accessToken, this.secretKey.acessSecretKey);
+        } catch (error) {
+            throw TokenError.handle({
+                error,
+                message: "As credenciais de acesso fornecidas são inválidas ou expiraram.",
+            });
+        };
+    };
+
+    async verifyRefreshToken({ refreshToken }) {
+        try {
+            return this.jwt.verify(refreshToken, this.secretKey.refreshSecretKey);
+        } catch (error) {
+            throw TokenError.handle({
+                error,
+                message: "As credenciais de atualização fornecidas são inválidas ou expiraram.",
             });
         };
     };

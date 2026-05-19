@@ -11,11 +11,7 @@ export default class CreateUserUseCase {
 
     async execute({ createUserRequestDTO }) {
 
-        const user = UserEntity.create({
-            email: createUserRequestDTO.email,
-            password: createUserRequestDTO.password,
-            name: createUserRequestDTO.name
-        });
+        const user = UserEntity.create({ email: createUserRequestDTO.email, password: createUserRequestDTO.password, name: createUserRequestDTO.name });
 
         const emailUserAlreadyExists = await this.userRepository.findByEmail({ email: user.email.value });
 
@@ -27,7 +23,7 @@ export default class CreateUserUseCase {
 
         user.updatePassword({ hashedPassword });
 
-        const savedUser = await this.userRepository.create({ user });
+        const savedUser = await this.userRepository.save({ user });
 
         return new CreateUserResponseDTO({
             id: savedUser.id,

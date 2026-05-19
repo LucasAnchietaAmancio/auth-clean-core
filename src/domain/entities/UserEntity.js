@@ -27,11 +27,6 @@ export default class UserEntity {
         if (!id || !name || !email || !hashedPassword) {
             throw new InvalidDomainParams({ originalError: "Dados insuficientes para reconstrução da entidade" });
         }
-        return new UserEntity({
-            id,
-            email: EmailValueObject.restore({ email }),
-            password: PasswordValueObject.restore({ hashedPassword }),
-            name: NameValueObject.restore({ name })
-        });
+        return new UserEntity({ id, email: EmailValueObject.restore({ email }), password: PasswordValueObject.restore({ hashedPassword }), name: NameValueObject.restore({ name }) });
     };
 };

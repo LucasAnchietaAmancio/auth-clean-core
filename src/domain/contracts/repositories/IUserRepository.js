@@ -1,10 +1,14 @@
 
 export default class IUserRepository {
-    create({ userEntity }) {
+    async save({ user }) {
         throw new Error("Método não implementado");
     };
 
-    findByEmail({ email }) {
+    async findByEmail({ email }) {
+        throw new Error("Método não implementado");
+    };
+
+    async findAuthByEmail({ email }) {
         throw new Error("Método não implementado");
     };
 };

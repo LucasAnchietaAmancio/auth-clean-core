@@ -5,7 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "windows", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -14,21 +15,21 @@ datasource db {
 }
 
 model users {
-  id_user       Int              @id @default(autoincrement())
-  email         String           @unique
-  name          String
-  password      String
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
-  refreshTokens refresh_tokens[]
+  id_user    Int        @id @default(autoincrement())
+  email      String     @unique
+  name       String
+  password   String
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  sessions   sessions[]
 }
 
-model refresh_tokens {
-  id_refresh_token Int      @id @default(autoincrement())
-  userId           Int
-  token            String   @unique
-  jti              String   @unique
-  user             users    @relation(fields: [userId], references: [id_user])
-  expiresAt        Int
-  createdAt        DateTime @default(now())
+model sessions {
+  id_session Int      @id @default(autoincrement())
+  user_id    Int
+  token      String   @unique
+  jti        String   @unique
+  expires_at Int
+  created_at DateTime @default(now())
+  user       users    @relation(fields: [user_id], references: [id_user])
 }

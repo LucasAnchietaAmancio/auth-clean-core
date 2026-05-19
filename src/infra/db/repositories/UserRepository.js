@@ -8,7 +8,7 @@ export default class UserRepository extends IUserRepository {
         this.db = db;
     };
 
-    async create({ user }) {
+    async save({ user }) {
         try {
             const db = await this.db.getClient();
             const userRecord = await db.users.create({

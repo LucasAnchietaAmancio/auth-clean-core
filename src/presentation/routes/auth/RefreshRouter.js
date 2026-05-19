@@ -1,5 +1,5 @@
 
-export default class AuthRouter {
+export default class RefreshRouter {
     constructor({ router, rateLimit, validateSchema, controller }) {
         this.router = router;
         this.rateLimit = rateLimit;
@@ -8,9 +8,8 @@ export default class AuthRouter {
     }
 
     init() {
-        this.router.post("/login",
-            this.rateLimit.execute({ limit: 10, minutes: 1, prefix: "login" }),
-            this.validateSchema.execute({ schemaName: "USER_LOGIN" }),
+        this.router.post("/refresh",
+            this.rateLimit.execute({ limit: 10, minutes: 1, prefix: "refresh" }),
             (req, res, next) => this.controller.handle(req, res, next)
         );
 
