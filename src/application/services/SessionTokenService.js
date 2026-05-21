@@ -8,22 +8,17 @@ export default class SessionTokenService {
         this.envs = envs;
     }
 
-    async generateSessionTokens({ userId, email }) {
-        const accessToken = await this.tokenProvider.generateAccessToken({
-            payload: { id: userId, email },
-            expires: this.envs.jwt.accessTokenExpiresIn
-        });
+    async generateSessionTokens({ idUser, email }) {
 
-        const refreshTokenValue = await this.tokenProvider.generateRefreshToken({
-            payload: { id: userId, email },
-            expires: this.envs.jwt.refreshTokenExpiresIn
-        });
+        const accessToken = await this.tokenProvider.generateAccessToken({ payload: { idUser: idUser, email }, expires: this.envs.jwt.accessTokenExpiresIn} );
+
+        const refreshTokenValue = await this.tokenProvider.generateRefreshToken({ payload: { idUser: idUser, email }, expires: this.envs.jwt.refreshTokenExpiresIn });
 
         const decoded = await this.tokenProvider.decodeToken({ token: refreshTokenValue });
         const hashedRefreshToken = await this.hashProvider.hash({ value: refreshTokenValue });
 
         const sessionEntity = SessionEntity.create({
-            userId,
+            idUser,
             token: hashedRefreshToken,
             jti: decoded.jti,
             expiresAt: decoded.exp
@@ -34,30 +29,19 @@ export default class SessionTokenService {
         return { accessToken, refreshToken: refreshTokenValue };
     }
 
-    async rotateSessionTokens({ userId, email, currentSessionEntity }) {
-        const accessToken = await this.tokenProvider.generateAccessToken({
-            payload: { id: userId, email },
-            expires: this.envs.jwt.accessTokenExpiresIn
-        });
+    async rotateSessionTokens({ idUser, email, currentSessionEntity }) {
 
-        const refreshTokenValue = await this.tokenProvider.generateRefreshToken({
-            payload: { id: userId, email },
-            expires: this.envs.jwt.refreshTokenExpiresIn
-        });
+        const accessToken = await this.tokenProvider.generateAccessToken({ payload: { idUser: idUser, email }, expires: this.envs.jwt.accessTokenExpiresIn });
 
-        const decoded = await this.tokenProvider.decodeToken({ token: refreshTokenValue });
-        const hashedRefreshToken = await this.hashProvider.hash({ value: refreshTokenValue });
+        const refreshToken = await this.tokenProvider.generateRefreshToken({ payload: { idUser: idUser, email }, expires: this.envs.jwt.refreshTokenExpiresIn });
 
-        currentSessionEntity.updateSessionData({
-            newTokenHash: hashedRefreshToken,
-            newJti: decoded.jti,
-            newExpiresAt: decoded.exp
-        });
+        const decoded = await this.tokenProvider.decodeToken({ token: refreshToken });
+        const hashedRefreshToken = await this.hashProvider.hash({ value: refreshToken });
 
-        await this.sessionRepository.update({
-            sessionEntity: currentSessionEntity
-        });
+        currentSessionEntity.updateSessionData({ newTokenHash: hashedRefreshToken, newJti: decoded.jti, newExpiresAt: decoded.exp });
 
-        return { accessToken, refreshToken: refreshTokenValue };
+        await this.sessionRepository.update({ sessionEntity: currentSessionEntity });
+
+        return { accessToken, refreshToken };
     }
 }

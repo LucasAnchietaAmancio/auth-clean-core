@@ -34,12 +34,12 @@ describe("Testes de Apresentação: AuthMiddleware", () => {
         test("Deve permitir o acesso chamando next() e injetar req.user quando o token de acesso for válido", async () => {
             req.headers.authorization = "Bearer token-valido";
             tokenProviderMock.verifyAccessToken.mockResolvedValue({
-                id: 1,
+                idUser: 1,
                 email: "test@email.com",
             });
             userRepositoryMock.findByEmail.mockResolvedValue(
                 UserEntity.restore({
-                    id: 1,
+                    idUser: 1,
                     name: "User Test",
                     email: "test@email.com",
                     hashedPassword: "hashed",
@@ -52,7 +52,7 @@ describe("Testes de Apresentação: AuthMiddleware", () => {
             expect(tokenProviderMock.verifyAccessToken).toHaveBeenCalledWith({ accessToken: "token-valido" });
             expect(userRepositoryMock.findByEmail).toHaveBeenCalledWith({ email: "test@email.com" });
             expect(req.user).toEqual({
-                id: 1,
+                idUser: 1,
                 email: "test@email.com",
             });
             expect(next).toHaveBeenCalledWith();
@@ -78,8 +78,8 @@ describe("Testes de Apresentação: AuthMiddleware", () => {
         test("Deve chamar next(error) com InvalidTokenError se o token decodificado for inválido ou sem e-mail", async () => {
             req.headers.authorization = "Bearer token-sem-email";
             tokenProviderMock.verifyAccessToken.mockResolvedValue({
-                id: 1,
-                // sem email
+                idUser: 1,
+
             });
 
             const middlewareFn = sut.execute();
@@ -102,7 +102,7 @@ describe("Testes de Apresentação: AuthMiddleware", () => {
         test("Deve chamar next(error) com InvalidTokenError se o usuário não for encontrado no banco de dados", async () => {
             req.headers.authorization = "Bearer token-valido";
             tokenProviderMock.verifyAccessToken.mockResolvedValue({
-                id: 1,
+                idUser: 1,
                 email: "test@email.com",
             });
             userRepositoryMock.findByEmail.mockResolvedValue(null);

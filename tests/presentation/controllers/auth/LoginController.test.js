@@ -1,6 +1,6 @@
 import { describe, jest, test, expect, beforeEach } from "@jest/globals";
 import LoginController from "../../../../src/presentation/controllers/auth/LoginController.js";
-import LoginResponseDTO from "../../../../src/application/dtos/auth/LoginResponseDTO.js";
+import LoginResponseDTO from "../../../../src/application/use-cases/auth/dtos/LoginResponseDTO.js";
 
 describe("Testes de Apresentação: LoginController", () => {
     const loginUseCaseMock = {
@@ -44,7 +44,7 @@ describe("Testes de Apresentação: LoginController", () => {
             const loginResponse = new LoginResponseDTO({
                 accessToken: "access-token-mock",
                 refreshToken: "refresh-token-mock",
-                user: { id: "1", name: "User Mock" },
+                user: { idUser: "1", name: "User Mock" },
             });
             loginUseCaseMock.execute.mockResolvedValue(loginResponse);
 
@@ -67,7 +67,7 @@ describe("Testes de Apresentação: LoginController", () => {
             expect(res.json).toHaveBeenCalledWith({
                 success: true,
                 message: "Login realizado com sucesso",
-                user: { id: "1", name: "User Mock" },
+                user: { idUser: "1", name: "User Mock" },
             });
             expect(next).not.toHaveBeenCalled();
         });

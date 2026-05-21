@@ -15,7 +15,7 @@ describe("Testes de Infraestrutura: JwtTokenProvider", () => {
 
     const envsMock = {
         jwt: {
-            acessSecretKey: "access-secret-key-test",
+            accessSecretKey: "access-secret-key-test",
             refreshSecretKey: "refresh-secret-key-test",
         },
     };

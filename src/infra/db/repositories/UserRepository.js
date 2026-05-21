@@ -29,6 +29,28 @@ export default class UserRepository extends IUserRepository {
         };
     };
 
+    async findByIdUser({ idUser }) {
+        try {
+            const db = await this.db.getClient();
+            const userRecord = await db.users.findUnique({
+                where: { id_user: idUser },
+                select: {
+                    id_user: true,
+                    email: true,
+                    name: true
+                }
+            });
+
+            return UserMapper.toPublicView(userRecord);
+
+        } catch (error) {
+            throw DatabaseError.handle({
+                error,
+                message: "Erro ao buscar usuário por idUser"
+            });
+        };
+    };
+
     async findByEmail({ email }) {
         try {
             const db = await this.db.getClient();

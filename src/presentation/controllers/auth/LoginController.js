@@ -1,4 +1,4 @@
-import LoginRequestDTO from "../../../application/dtos/auth/LoginRequestDTO.js";
+import LoginRequestDTO from "../../../application/use-cases/auth/dtos/LoginRequestDTO.js";
 
 export default class LoginController {
     constructor({ loginUseCase, envs }) {
@@ -16,13 +16,6 @@ export default class LoginController {
             const accessTokenMaxAge = this.envs?.jwt?.accessTokenCookieMaxAgeMs || 15 * 60 * 1000;
             const refreshTokenMaxAge = this.envs?.jwt?.refreshTokenCookieMaxAgeMs || 7 * 24 * 60 * 60 * 1000;
 
-            res.cookie("accessToken", result.accessToken, {
-                httpOnly: true,
-                secure: true,
-                sameSite: "strict",
-                maxAge: accessTokenMaxAge
-            });
-
             res.cookie("refreshToken", result.refreshToken, {
                 httpOnly: true,
                 secure: true,
@@ -33,7 +26,10 @@ export default class LoginController {
             return res.status(200).json({
                 success: true,
                 message: "Login realizado com sucesso",
-                user: result.user
+                metadata: {
+                    idUser: result.user.idUser,
+                    acessToken: result.accessToken
+                }
             });
 
         } catch (error) {

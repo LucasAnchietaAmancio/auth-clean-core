@@ -15,7 +15,7 @@ export default class JwtTokenProvider extends ITokenProvider {
                 ...payload,
                 jti: this.crypto.randomUUID(),
             };
-            return this.jwt.sign(tokenPayload, this.secretKey.acessSecretKey, { expiresIn: expires });
+            return this.jwt.sign(tokenPayload, this.secretKey.accessSecretKey, { expiresIn: expires });
         } catch (error) {
             throw TokenError.handle({
                 error,
@@ -41,7 +41,7 @@ export default class JwtTokenProvider extends ITokenProvider {
 
     async verifyAccessToken({ accessToken }) {
         try {
-            return this.jwt.verify(accessToken, this.secretKey.acessSecretKey);
+            return this.jwt.verify(accessToken, this.secretKey.accessSecretKey);
         } catch (error) {
             throw TokenError.handle({
                 error,

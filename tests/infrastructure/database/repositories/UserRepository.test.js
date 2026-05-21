@@ -21,7 +21,7 @@ describe("Testes de Infraestrutura: UserRepository", () => {
         name: "Lucas",
         email: "lucas@email.com",
         hashedPassword: "HashedPassword@123",
-        id: "id-qualquer"
+        idUser: "id-qualquer"
     });
 
     describe("Validação da implementação do método 'save':", () => {
@@ -38,7 +38,7 @@ describe("Testes de Infraestrutura: UserRepository", () => {
             const result = await sutUserRepository.save({ user: UserEntityExample });
 
             expect(result).toBeInstanceOf(UserEntity);
-            expect(result.id).toBe(1);
+            expect(result.idUser).toBe(1);
             expect(result.email.value).toBe("lucas@email.com");
         });
 
@@ -64,7 +64,7 @@ describe("Testes de Infraestrutura: UserRepository", () => {
             const result = await sutUserRepository.findByEmail({ email: "lucas@email.com" });
 
             expect(result).toBeInstanceOf(UserEntity);
-            expect(result.id).toBe(1);
+            expect(result.idUser).toBe(1);
         });
     });
 });

@@ -6,7 +6,7 @@ export default class UserMapper {
         if (!userRecord) return null;
 
         return UserEntity.restore({
-            id: userRecord.id_user,
+            idUser: userRecord.id_user,
             name: userRecord.name,
             email: userRecord.email,
             hashedPassword: userRecord.password
@@ -17,7 +17,7 @@ export default class UserMapper {
         if (!userRecord) return null;
 
         return {
-            id: userRecord.id_user,
+            idUser: userRecord.id_user,
             email: userRecord.email,
             name: userRecord.name,
         };
@@ -27,7 +27,7 @@ export default class UserMapper {
         if (!userRecord) return null;
 
         return UserEntity.restore({
-            id: userRecord.id_user,
+            idUser: userRecord.id_user,
             email: userRecord.email,
             name: userRecord.name,
             hashedPassword: userRecord.password

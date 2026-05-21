@@ -3,17 +3,38 @@ import InvalidSchemaError from "../../errors/InvalidSchemaError.js";
 import InternalServerError from "../../errors/InternalServerError.js";
 
 export default class ZodValidatorProvider extends ISchemaProvider {
-    constructor({ catalog }) {
+    constructor({ zod }) {
         super();
-        this.catalog = catalog;
+        this.z = zod;
     };
 
     validate({ value, schemaName }) {
-        const schema = this.catalog[schemaName];
+        const schemasCatalog = {
+            USER_REGISTER: this.z.object({
+                name: this.z.string().max(55),
+                email: this.z.string().email().max(55),
+                password: this.z.string().max(55)
+            }),
+            LOGIN: this.z.object({
+                email: this.z.string().email().max(55),
+                password: this.z.string().max(55)
+            }),
+            USER_PROFILE: this.z.object({
+                idUser: this.z.coerce.number().int().positive()
+            }),
+            LOGOFF: this.z.object({
+                refreshToken: this.z.string().min(55)
+            }),
+            REFRESH: this.z.object({
+                refreshToken: this.z.string().min(55)
+            })
+        };
+
+        const schema = schemasCatalog[schemaName];
 
         if (!schema) {
             throw new InternalServerError({
-                originalError: "Schema não encontrado no catálogo, para fazer a validação de entrada."
+                originalError: "Schema nao encontrado no catalogo, para fazer a validacao de entrada."
             });
         }
 

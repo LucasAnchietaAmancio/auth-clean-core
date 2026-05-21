@@ -1,5 +1,8 @@
 node_modules/
-
+.idea/
+docs/enterprise_code_audit.md.resolved
+docs/Task
 .env
-
+test-output.txt
+.junie
 src/infrastructure/database/generated/

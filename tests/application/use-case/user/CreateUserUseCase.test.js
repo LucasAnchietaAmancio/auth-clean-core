@@ -1,7 +1,7 @@
 import { describe, jest, test, expect } from "@jest/globals";
 import CreateUserUseCase from "../../../../src/application/use-cases/user/CreateUserUseCase.js";
-import CreateUserRequestDTO from "../../../../src/application/dtos/user/CreateUserRequestDTO.js";
-import CreateUserResponseDTO from "../../../../src/application/dtos/user/CreateUserResponseDTO.js";
+import CreateUserRequestDTO from "../../../../src/application/use-cases/user/dtos/CreateUserRequestDTO.js";
+import CreateUserResponseDTO from "../../../../src/application/use-cases/user/dtos/CreateUserResponseDTO.js";
 import EmailAlreadyInUseError from "../../../../src/application/errors/EmailAlreadyInUseError.js";
 import InternalApplicationError from "../../../../src/application/errors/InternalApplicationError.js";
 
@@ -31,7 +31,7 @@ describe("Testes de Aplicação: CreateUserUseCase", () => {
         userRepositoryMock.findByEmail.mockResolvedValue(null);
         hashProviderMock.hash.mockResolvedValue("hashed_password");
         userRepositoryMock.save.mockResolvedValue({
-            id: "id-gerado",
+            idUser: "id-gerado",
             name: { value: "Novo Usuário" },
             email: { value: "novo@email.com" }
         });
@@ -39,7 +39,7 @@ describe("Testes de Aplicação: CreateUserUseCase", () => {
         const result = await sutCreateUserUseCase.execute({ createUserRequestDTO: validUserRequest });
 
         expect(result).toBeInstanceOf(CreateUserResponseDTO);
-        expect(result.id).toBe("id-gerado");
+        expect(result.idUser).toBe("id-gerado");
         expect(userRepositoryMock.save).toHaveBeenCalled();
     });
 

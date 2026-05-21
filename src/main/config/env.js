@@ -5,11 +5,6 @@ export default class Envs {
         this.db = {
             postgres: {
                 uri: this.parseTo({ value: process.env.DATABASE_URL, type: "string", key: "DATABASE_URL" }),
-                host: this.parseTo({ value: process.env.POSTGRES_HOST, type: "string", key: "POSTGRES_HOST" }),
-                port: this.parseTo({ value: process.env.POSTGRES_PORT, type: "number", key: "POSTGRES_PORT" }),
-                user: this.parseTo({ value: process.env.POSTGRES_USER, type: "string", key: "POSTGRES_USER" }),
-                password: this.parseTo({ value: process.env.POSTGRES_PASSWORD, type: "string", key: "POSTGRES_PASSWORD" }),
-                database: this.parseTo({ value: process.env.POSTGRES_DB, type: "string", key: "POSTGRES_DB" })
             },
             redis: {
                 url: this.parseTo({ value: process.env.REDIS_URL, type: "string", key: "REDIS_URL" })
@@ -21,7 +16,7 @@ export default class Envs {
         };
 
         this.jwt = {
-            acessSecretKey: this.parseTo({ value: process.env.JWT_ACCESS_SECRET_KEY, type: "string", key: "JWT_ACCESS_SECRET_KEY" }),
+            accessSecretKey: this.parseTo({ value: process.env.JWT_ACCESS_SECRET_KEY, type: "string", key: "JWT_ACCESS_SECRET_KEY" }),
             refreshSecretKey: this.parseTo({ value: process.env.JWT_REFRESH_SECRET_KEY, type: "string", key: "JWT_REFRESH_SECRET_KEY" }),
             accessTokenExpiresIn: this.parseTo({ value: process.env.ACCESS_TOKEN_EXPIRES_IN, type: "string", key: "ACCESS_TOKEN_EXPIRES_IN" }),
             refreshTokenExpiresIn: this.parseTo({ value: process.env.REFRESH_TOKEN_EXPIRES_IN, type: "string", key: "REFRESH_TOKEN_EXPIRES_IN" })
@@ -29,7 +24,6 @@ export default class Envs {
 
         this.server = {
             port: this.parseTo({ value: process.env.PORT, type: "number", key: "PORT" }),
-            nodeEnv: this.parseTo({ value: process.env.NODE_ENV, type: "string", key: "NODE_ENV" })
         };
     };
 

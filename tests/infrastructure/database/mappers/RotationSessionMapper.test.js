@@ -5,7 +5,7 @@ describe("Testes de Infraestrutura: SessionMapper", () => {
     
     const mockRecord = {
         id_session: 1,
-        user_id: 10,
+        id_user: 10,
         token: "jwt-token-string",
         jti: "jti-uuid",
         expires_at: 1234567890,
@@ -17,8 +17,8 @@ describe("Testes de Infraestrutura: SessionMapper", () => {
             const result = SessionMapper.toDomain(mockRecord);
 
             expect(result).toBeInstanceOf(SessionEntity);
-            expect(result.id).toBe(mockRecord.id_session);
-            expect(result.userId).toBe(mockRecord.user_id);
+            expect(result.idSession).toBe(mockRecord.id_session);
+            expect(result.idUser).toBe(mockRecord.id_user);
             expect(result.token).toBe(mockRecord.token);
             expect(result.jti).toBe(mockRecord.jti);
             expect(result.expiresAt).toBe(mockRecord.expires_at);

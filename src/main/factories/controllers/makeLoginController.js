@@ -1,33 +1,14 @@
-import UserRepository from "../../../infra/db/repositories/UserRepository.js";
-import BcryptHashProvider from "../../../infra/providers/hash/BcryptHashProvider.js";
-import JwtTokenProvider from "../../../infra/providers/token/JwtTokenProvider.js";
-import SessionRepository from "../../../infra/db/repositories/SessionRepository.js";
 import LoginUseCase from "../../../application/use-cases/auth/LoginUseCase.js";
 import LoginController from "../../../presentation/controllers/auth/LoginController.js";
-import crypto from "crypto";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import SessionTokenService from "../../../application/services/SessionTokenService.js";
+import { makeHashProvider } from "../providers/makeHashProvider.js";
+import { makeUserRepository } from "../repositories/makeUserRepository.js";
+import { makeSessionTokenService } from "../services/makeSessionTokenService.js";
 
 export const makeLoginController = ({ envs, db }) => {
-    const userRepository = new UserRepository({ db });
-    const hashProvider = new BcryptHashProvider({ bcrypt, envs });
-    const tokenProvider = new JwtTokenProvider({ jwt, crypto, envs });
-    const sessionRepository = new SessionRepository({ db });
-
-    const sessionTokenService = new SessionTokenService({
-        tokenProvider,
-        hashProvider,
-        sessionRepository,
-        envs
-    });
-
     const loginUseCase = new LoginUseCase({
-        userRepository,
-        hashProvider,
-        sessionTokenService,
-        tokenProvider,
-        sessionRepository
+        userRepository: makeUserRepository({ db }),
+        hashProvider: makeHashProvider({ envs }),
+        sessionTokenService: makeSessionTokenService({ envs, db })
     });
 
     return new LoginController({ loginUseCase, envs });

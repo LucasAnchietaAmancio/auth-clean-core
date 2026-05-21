@@ -5,32 +5,27 @@ import InvalidSchemaError from "../../../src/infra/errors/InvalidSchemaError.js"
 import InternalServerError from "../../../src/infra/errors/InternalServerError.js";
 
 describe("Testes de Infraestrutura: ZodValidatorProvider", () => {
-    const testSchema = z.object({
-        email: z.string().email(),
-        age: z.number().min(18)
-    });
+    const sut = new ZodValidatorProvider({ zod: z });
 
-    const catalogMock = {
-        "TEST_SCHEMA": testSchema
-    };
+    test("Deve validar dados corretamente usando schemaName", () => {
+        const validData = {
+            name: "Lucas",
+            email: "lucas@email.com",
+            password: "SenhaValida123"
+        };
 
-    const sut = new ZodValidatorProvider({ catalog: catalogMock });
+        const result = sut.validate({ value: validData, schemaName: "USER_REGISTER" });
 
-    test("Deve validar dados corretamente usando o nome do schema no catálogo", () => {
-        const validData = { email: "test@email.com", age: 20 };
-        const result = sut.validate({ value: validData, schemaName: "TEST_SCHEMA" });
         expect(result).toEqual(validData);
     });
 
     test("Deve lançar InvalidSchemaError para dados inválidos", () => {
-        const invalidData = { email: "wrong-email", age: 10 };
-
         expect(() => {
-            sut.validate({ value: invalidData, schemaName: "TEST_SCHEMA" });
+            sut.validate({ value: { email: "lucas@email.com" }, schemaName: "USER_REGISTER" });
         }).toThrow(InvalidSchemaError);
     });
 
-    test("Deve lançar InternalServerError caso o schemaName não exista no catálogo", () => {
+    test("Deve lançar InternalServerError caso o schemaName não exista", () => {
         expect(() => {
             sut.validate({ value: {}, schemaName: "NON_EXISTENT" });
         }).toThrow(InternalServerError);

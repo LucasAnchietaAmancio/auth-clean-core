@@ -1,16 +1,15 @@
-
-export default class AuthRouter {
-    constructor({ router, rateLimit, validateSchema, controller }) {
+export default class LoginRouter {
+    constructor({ router, rateLimit, controller, validator }) {
         this.router = router;
         this.rateLimit = rateLimit;
-        this.validateSchema = validateSchema;
         this.controller = controller;
+        this.validator = validator;
     }
 
     init() {
         this.router.post("/login",
             this.rateLimit.execute({ limit: 10, minutes: 1, prefix: "login" }),
-            this.validateSchema.execute({ schemaName: "USER_LOGIN" }),
+            this.validator.bodyValidation({ schemaName:"LOGIN" }),
             (req, res, next) => this.controller.handle(req, res, next)
         );
 

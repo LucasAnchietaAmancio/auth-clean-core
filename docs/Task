@@ -21,3 +21,12 @@
 - [/] Verificar se o usuario tem uma sessão ativa antes de aprovar o login
 ## 5. Desacoplamentos
 - [/]  Composition Root no server para desacoplar a classe envs do server
+
+
+# Features / Refatoraçõess Futuras
+
+## 1 Refatorações
+- [ ] Refatorar entidades e use cases, garantir que a regra de negocio fique totalmente encapsulada na entidade
+- [ ] Adicionar cache a side para busca de usuarios
+- [ ] Adicionar acesstoken em uma blacklist durante o logoff
+- [ ] Adicionar a busca por usuario a travez de req params

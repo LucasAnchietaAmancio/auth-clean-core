@@ -21,7 +21,7 @@ export default [
             },
         },
         rules: {
-            "no-unused-vars": "warn",
+            "no-unused-vars": ["warn", { "args": "none" }],
             "semi": ["error", "always"],
             "quotes": ["error", "double"],
             "indent": ["error", 4],

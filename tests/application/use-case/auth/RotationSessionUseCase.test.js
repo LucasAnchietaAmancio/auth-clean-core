@@ -1,7 +1,7 @@
 import { describe, jest, test, expect } from "@jest/globals";
 import RotationSessionUseCase from "../../../../src/application/use-cases/auth/RotationSessionUseCase.js";
-import RotationSessionRequestDTO from "../../../../src/application/dtos/auth/RotationSessionRequestDTO.js";
-import RotationSessionResponseDTO from "../../../../src/application/dtos/auth/RotationSessionResponseDTO.js";
+import RotationSessionRequestDTO from "../../../../src/application/use-cases/auth/dtos/RotationSessionRequestDTO.js";
+import RotationSessionResponseDTO from "../../../../src/application/use-cases/auth/dtos/RotationSessionResponseDTO.js";
 import InvalidTokenError from "../../../../src/application/errors/InvalidTokenError.js";
 import SessionEntity from "../../../../src/domain/entities/SessionEntity.js";
 import UserEntity from "../../../../src/domain/entities/UserEntity.js";
@@ -37,15 +37,15 @@ describe("Testes de Aplicação: RotationSessionUseCase", () => {
     });
 
     const mockSession = SessionEntity.restore({
-        id: 100,
-        userId: 1,
+        idSession: 100,
+        idUser: 1,
         token: "hashed-token",
         jti: "jti-valido",
         expiresAt: 9999999,
     });
 
     const mockUser = UserEntity.restore({
-        id: 1,
+        idUser: 1,
         name: "Lucas Anchieta",
         email: "lucas@email.com",
         hashedPassword: "hashed-password",
@@ -54,7 +54,7 @@ describe("Testes de Aplicação: RotationSessionUseCase", () => {
     describe("Validação do fluxo de rotação de sessão:", () => {
         test("Deve rotacionar a sessão com sucesso e retornar novos tokens", async () => {
             tokenProviderMock.verifyRefreshToken.mockResolvedValue({
-                id: 1,
+                idUser: 1,
                 email: "lucas@email.com",
                 jti: "jti-valido",
             });
@@ -77,7 +77,7 @@ describe("Testes de Aplicação: RotationSessionUseCase", () => {
             expect(hashProviderMock.compare).toHaveBeenCalledWith({ value: "raw-refresh-token", hash: "hashed-token" });
             expect(userRepositoryMock.findByEmail).toHaveBeenCalledWith({ email: "lucas@email.com" });
             expect(sessionTokenServiceMock.rotateSessionTokens).toHaveBeenCalledWith({
-                userId: 1,
+                idUser: 1,
                 email: "lucas@email.com",
                 currentSessionEntity: mockSession,
             });
@@ -95,9 +95,9 @@ describe("Testes de Aplicação: RotationSessionUseCase", () => {
 
         test("Deve lançar InvalidTokenError se o token decodificado não tiver jti", async () => {
             tokenProviderMock.verifyRefreshToken.mockResolvedValue({
-                id: 1,
+                idUser: 1,
                 email: "lucas@email.com",
-                // jti ausente
+
             });
 
             const request = new RotationSessionRequestDTO({ refreshToken: "raw-refresh-token" });
@@ -108,7 +108,7 @@ describe("Testes de Aplicação: RotationSessionUseCase", () => {
 
         test("Deve deletar todas as sessões do usuário e lançar InvalidTokenError se a sessão não for encontrada no banco (Detecção de Reuso)", async () => {
             tokenProviderMock.verifyRefreshToken.mockResolvedValue({
-                id: 1,
+                idUser: 1,
                 email: "lucas@email.com",
                 jti: "jti-revogado",
             });
@@ -120,12 +120,12 @@ describe("Testes de Aplicação: RotationSessionUseCase", () => {
             await expect(sut.execute({ rotationSessionRequestDTO: request }))
                 .rejects.toThrow(InvalidTokenError);
 
-            expect(sessionRepositoryMock.deleteAllByUserId).toHaveBeenCalledWith({ userId: 1 });
+            expect(sessionRepositoryMock.deleteAllByUserId).toHaveBeenCalledWith({ idUser: 1 });
         });
 
         test("Deve lançar InvalidTokenError se a sessão existe mas o token não bate com o hash", async () => {
             tokenProviderMock.verifyRefreshToken.mockResolvedValue({
-                id: 1,
+                idUser: 1,
                 email: "lucas@email.com",
                 jti: "jti-valido",
             });
@@ -140,7 +140,7 @@ describe("Testes de Aplicação: RotationSessionUseCase", () => {
 
         test("Deve lançar InvalidTokenError se o usuário não for encontrado", async () => {
             tokenProviderMock.verifyRefreshToken.mockResolvedValue({
-                id: 1,
+                idUser: 1,
                 email: "lucas@email.com",
                 jti: "jti-valido",
             });

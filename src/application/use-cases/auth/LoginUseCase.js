@@ -1,16 +1,15 @@
 import InvalidCredentialsError from "../../errors/InvalidCredentialsError.js";
-import LoginResponseDTO from "../../dtos/auth/LoginResponseDTO.js";
+import LoginResponseDTO from "./dtos/LoginResponseDTO.js";
 
 export default class LoginUseCase {
-    constructor({ userRepository, hashProvider, sessionTokenService, tokenProvider, sessionRepository }) {
+    constructor({ userRepository, hashProvider, sessionTokenService }) {
         this.userRepository = userRepository;
         this.hashProvider = hashProvider;
         this.sessionTokenService = sessionTokenService;
-        this.tokenProvider = tokenProvider;
-        this.sessionRepository = sessionRepository;
     }
 
     async execute({ loginRequestDTO }) {
+
         const user = await this.userRepository.findByEmail({ email: loginRequestDTO.email });
 
         if (!user) throw new InvalidCredentialsError({ originalError: "Usuário não encontrado" });
@@ -20,7 +19,7 @@ export default class LoginUseCase {
         if (!passwordMatch) throw new InvalidCredentialsError({ originalError: "Senha inválida" });
 
         const { accessToken, refreshToken } = await this.sessionTokenService.generateSessionTokens({
-            userId: user.id,
+            idUser: user.idUser,
             email: user.email.value
         });
 
@@ -28,7 +27,7 @@ export default class LoginUseCase {
             accessToken,
             refreshToken,
             user: {
-                id: user.id,
+                idUser: user.idUser,
                 name: user.name.value
             }
         });

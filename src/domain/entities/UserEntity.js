@@ -4,8 +4,8 @@ import NameValueObject from "../value-objects/NameValueObject.js";
 import InvalidDomainParams from "../errors/InvalidDomainParams.js";
 
 export default class UserEntity {
-    constructor({ id, email, password, name }) {
-        this.id = id || null;
+    constructor({ idUser, email, password, name }) {
+        this.idUser = idUser;
         this.name = name;
         this.email = email;
         this.password = password;
@@ -23,10 +23,10 @@ export default class UserEntity {
         this.password = PasswordValueObject.restore({ hashedPassword });
     };
 
-    static restore({ id, name, email, hashedPassword }) {
-        if (!id || !name || !email || !hashedPassword) {
+    static restore({ idUser, name, email, hashedPassword }) {
+        if (!idUser || !name || !email || !hashedPassword) {
             throw new InvalidDomainParams({ originalError: "Dados insuficientes para reconstrução da entidade" });
         }
-        return new UserEntity({ id, email: EmailValueObject.restore({ email }), password: PasswordValueObject.restore({ hashedPassword }), name: NameValueObject.restore({ name }) });
+        return new UserEntity({ idUser, email: EmailValueObject.restore({ email }), password: PasswordValueObject.restore({ hashedPassword }), name: NameValueObject.restore({ name }) });
     };
 };

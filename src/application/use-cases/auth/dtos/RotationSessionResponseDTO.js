@@ -3,7 +3,7 @@ export default class RotationSessionResponseDTO {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.user = {
-            id: user.id,
+            idUser: user.idUser,
             name: user.name,
         };
     };

@@ -1,6 +1,6 @@
 import { describe, jest, test, expect, beforeEach } from "@jest/globals";
 import RotationSessionController from "../../../../src/presentation/controllers/auth/RotationSessionController.js";
-import RotationSessionResponseDTO from "../../../../src/application/dtos/auth/RotationSessionResponseDTO.js";
+import RotationSessionResponseDTO from "../../../../src/application/use-cases/auth/dtos/RotationSessionResponseDTO.js";
 
 describe("Testes de Apresentação: RotationSessionController", () => {
     const rotationSessionUseCaseMock = {
@@ -43,7 +43,7 @@ describe("Testes de Apresentação: RotationSessionController", () => {
             const rotationResponse = new RotationSessionResponseDTO({
                 accessToken: "new-access-token-mock",
                 refreshToken: "new-refresh-token-mock",
-                user: { id: "1", name: "User Mock" },
+                user: { idUser: "1", name: "User Mock" },
             });
             rotationSessionUseCaseMock.execute.mockResolvedValue(rotationResponse);
 
@@ -66,7 +66,7 @@ describe("Testes de Apresentação: RotationSessionController", () => {
             expect(res.json).toHaveBeenCalledWith({
                 success: true,
                 message: "Sessão rotacionada com sucesso",
-                user: { id: "1", name: "User Mock" },
+                user: { idUser: "1", name: "User Mock" },
             });
             expect(next).not.toHaveBeenCalled();
         });

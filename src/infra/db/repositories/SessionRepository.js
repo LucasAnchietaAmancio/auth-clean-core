@@ -13,7 +13,7 @@ export default class SessionRepository extends ISessionRepository {
             const db = await this.db.getClient();
             const record = await db.sessions.create({
                 data: {
-                    user_id: sessionEntity.userId,
+                    id_user: sessionEntity.idUser,
                     token: sessionEntity.token,
                     jti: sessionEntity.jti,
                     expires_at: sessionEntity.expiresAt
@@ -34,7 +34,7 @@ export default class SessionRepository extends ISessionRepository {
         try {
             const db = await this.db.getClient();
             const record = await db.sessions.update({
-                where: { id_session: sessionEntity.id },
+                where: { id_session: sessionEntity.idSession },
                 data: {
                     token: sessionEntity.token,
                     jti: sessionEntity.jti,
@@ -85,11 +85,11 @@ export default class SessionRepository extends ISessionRepository {
         }
     }
 
-    async deleteAllByUserId({ userId }) {
+    async deleteAllByUserId({ idUser }) {
         try {
             const db = await this.db.getClient();
             await db.sessions.deleteMany({
-                where: { user_id: userId }
+                where: { id_user: idUser }
             });
         } catch (error) {
             throw DatabaseError.handle({

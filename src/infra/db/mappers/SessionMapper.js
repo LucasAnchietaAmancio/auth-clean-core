@@ -5,8 +5,8 @@ export default class SessionMapper {
         if (!sessionRecord) return null;
 
         return SessionEntity.restore({
-            id: sessionRecord.id_session,
-            userId: sessionRecord.user_id,
+            idSession: sessionRecord.id_session,
+            idUser: sessionRecord.id_user,
             token: sessionRecord.token,
             jti: sessionRecord.jti,
             expiresAt: sessionRecord.expires_at

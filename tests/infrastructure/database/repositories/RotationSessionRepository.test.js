@@ -23,7 +23,7 @@ describe("Testes de Infraestrutura: SessionRepository", () => {
     describe("Validação do método 'save':", () => {
         test("Deve chamar o prisma.create com os dados corretos e retornar a entidade", async () => {
             const entity = SessionEntity.create({
-                userId: 1,
+                idUser: 1,
                 token: "token-test",
                 jti: "jti-test",
                 expiresAt: 123456789
@@ -31,7 +31,7 @@ describe("Testes de Infraestrutura: SessionRepository", () => {
 
             prismaMock.sessions.create.mockResolvedValue({
                 id_session: 100,
-                user_id: 1,
+                id_user: 1,
                 token: "token-test",
                 jti: "jti-test",
                 expires_at: 123456789
@@ -39,13 +39,21 @@ describe("Testes de Infraestrutura: SessionRepository", () => {
 
             const result = await sut.save({ sessionEntity: entity });
 
+            expect(prismaMock.sessions.create).toHaveBeenCalledWith({
+                data: {
+                    id_user: 1,
+                    token: "token-test",
+                    jti: "jti-test",
+                    expires_at: 123456789
+                }
+            });
             expect(result).toBeInstanceOf(SessionEntity);
-            expect(result.id).toBe(100);
+            expect(result.idSession).toBe(100);
         });
 
         test("Deve lançar DatabaseError em caso de falha no banco", async () => {
             prismaMock.sessions.create.mockRejectedValue(new Error("DB Fail"));
-            const entity = SessionEntity.create({ userId: 1, token: "t", jti: "j", expiresAt: 1 });
+            const entity = SessionEntity.create({ idUser: 1, token: "t", jti: "j", expiresAt: 1 });
 
             await expect(sut.save({ sessionEntity: entity }))
                 .rejects.toThrow(DatabaseError);
@@ -56,7 +64,7 @@ describe("Testes de Infraestrutura: SessionRepository", () => {
         test("Deve retornar a entidade quando o jti for encontrado", async () => {
             prismaMock.sessions.findUnique.mockResolvedValue({
                 id_session: 100,
-                user_id: 1,
+                id_user: 1,
                 token: "token-existente",
                 jti: "jti-test",
                 expires_at: 123456789

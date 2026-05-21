@@ -1,64 +1,98 @@
 # Clean OAuth Core
 
-Uma API de autenticação robusta e escalável construída com **Node.js**, seguindo os princípios de **Clean Architecture** e **Domain-Driven Design (DDD)**. 
+API de autenticacao com Node.js, Express, Prisma, PostgreSQL, Redis, JWT, Bcrypt e Zod.
 
-Este projeto foi desenvolvido com foco em alta testabilidade, integridade de domínio e segurança avançada.
+## Funcionalidades
 
----
+- Registro e login de usuarios.
+- Access token e refresh token em cookies `httpOnly`.
+- Rotacao de sessao com `jti`.
+- Logout com revogacao de sessao.
+- Perfil autenticado em `GET /v1/user/me`.
+- Rate limit com Redis.
+- Validacao centralizada por `schemaName`.
+- Estrutura em camadas: domain, application, infra, presentation e main.
 
-## Funcionalidades Atuais
+## Requisitos
 
-- [x] **Domínio Rico**: Entidades e Objetos de Valor (`Email`, `Password`, `Name`) com autovalidação e lógica de negócio encapsulada.
-- [x] **Gestão de Erros Semântica**: Sistema centralizado com códigos únicos, timestamps e rastreabilidade total. Veja [ERRORS.md](docs/ERRORS.md).
-- [x] **Autenticação Local**: Registro e Login de usuários com criptografia Bcrypt.
-- [x] **Sessões Seguras (JWT)**: Geração de tokens com `jti` (JWT ID) para rastreabilidade e expiração controlada.
-- [x] **Segurança Avançada**: 
-    - **Rate Limiting (Redis)**: Proteção distribuída contra força bruta com suporte a múltiplos prefixos.
-    - **Payload Limit**: Proteção contra ataques de DoS via JSON massivo.
-    - **User Enumeration Prevention**: Respostas unificadas para e-mail/senha incorretos.
-- [x] **Arquitetura de Middlewares**: Todos os middlewares (`RateLimit`, `Validation`, `ErrorHandler`) implementados como Classes para maior consistência e desacoplamento.
-- [x] **Validação Centralizada**: Middlewares de validação usando **Zod** desacoplados dos Controllers.
-- [x] **Infraestrutura Robusta**: Tradutores automáticos de erros (`Prisma` e `Redis`) para garantir respostas seguras.
+- Node.js 20+
+- Docker e Docker Compose
+- PostgreSQL e Redis, caso rode sem Docker
 
----
+## Variaveis De Ambiente
 
-## Tecnologias e Ferramentas
+Use `.env.example` como base:
 
-- **Backend**: Node.js (ESModules)
-- **Framework**: Express.js
-- **Banco de Dados**: PostgreSQL (Prisma ORM)
-- **Cache & Throttling**: Redis
-- **Validação**: Zod
-- **Segurança**: Bcrypt (Hashing) / JWT (Tokens)
+```env
 
----
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=123456
+POSTGRES_DB=oauth_db
+POSTGRES_PORT=5432
 
-## Arquitetura
+DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}"
 
-O projeto segue a **Clean Architecture**, dividida em:
+# Geralmente 10-12
+BCRYPT_SALT=12
 
-1. **Domain**: Regras de negócio puras (Entities, Value Objects).
-2. **Application**: Casos de uso (Use Cases), DTOs e Portas (Interfaces).
-3. **Infrastructure**: Implementações técnicas (Prisma, Repositórios, Providers de Hash/Token).
-4. **Presentation**: Camada externa (Controllers, Routes, Middlewares de Protocolo).
-5. **Main (Factories)**: Ponto de composição do sistema onde as dependências são injetadas (Composition Root).
+JWT_ACCESS_SECRET_KEY=your_access_secret
+JWT_REFRESH_SECRET_KEY=your_refresh_secret
 
----
+# Exemplos:
+# 15m
+# 1h
+# 7d
+ACCESS_TOKEN_EXPIRES_IN=15m
+REFRESH_TOKEN_EXPIRES_IN=7d
 
-## Como Rodar o Projeto
+# Milissegundos
+ACCESS_TOKEN_COOKIE_MAX_AGE_MS=1200000
+REFRESH_TOKEN_COOKIE_MAX_AGE_MS=864000000
 
-### Pré-requisitos
-- Node.js v18+
-- Docker (para PostgreSQL e Redis)
 
-### Instalação
-1. Clone o repositório.
-2. Instale as dependências: `npm install`
-3. Configure o arquivo `.env` (use o `.env.example` como base).
-4. Suba os serviços: `docker-compose up -d`
-5. Prepare o banco: `npx prisma db push`
-6. Rode em desenvolvimento: `npm run dev`
+PORT=8080
 
----
+REDIS_URL=redis://redis:6379
+REDIS_PORT=6379
 
-*Desenvolvido com ☕ e foco em Clean Code.*
+```
+
+## API: 
+`http://localhost:3000/v1`
+
+## Rodando Com Docker
+
+Crie um `.env` a partir de `.env.example` e execute:
+
+```bash
+docker compose up --build
+```
+
+
+
+## Scripts
+
+```bash
+npm test
+npm run lint
+npm start
+npm run dev
+```
+
+## Migrations
+
+As migrations estao em `prisma/migrations`. A migration `20260521150356_restore_session_table` renomeia `sessions.user_id` para `sessions.id_user` sem dropar dados.
+
+Para banco novo, use:
+
+```bash
+npx prisma migrate deploy
+```
+
+## Rotas
+
+- `POST /v1/user/register`
+- `POST /v1/login`
+- `POST /v1/refresh`
+- `POST /v1/logout`
+- `GET /v1/user/me`

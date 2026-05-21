@@ -1,0 +1,28 @@
+name: "Continuous Integration Pipeline"
+
+on:
+    push:
+        branches:
+          - dev
+    pull_request:
+        branches:
+          - dev
+jobs:
+    continuos-integration-test-application:
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: "Checkout at application"
+          uses: actions/checkout@v4
+
+        - name: "install the node setup"
+          uses: actions/setup-node@v4
+          with:
+            node-version: "20"
+
+        - name: "Install dependencies"
+          run: npm install
+
+        - name: "Run tests from application"
+          run: npm test
+

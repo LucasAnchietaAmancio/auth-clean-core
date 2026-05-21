@@ -30,7 +30,7 @@ export default class AuthMiddleware {
                 }
 
                 req.user = {
-                    id: user.id,
+                    idUser: user.idUser,
                     email: user.email.value
                 };
 

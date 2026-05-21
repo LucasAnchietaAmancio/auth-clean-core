@@ -1,4 +1,4 @@
-import RotationSessionResponseDTO from "../../dtos/auth/RotationSessionResponseDTO.js";
+import RotationSessionResponseDTO from "./dtos/RotationSessionResponseDTO.js";
 import InvalidTokenError from "../../errors/InvalidTokenError.js";
 
 export default class RotationSessionUseCase {
@@ -22,8 +22,8 @@ export default class RotationSessionUseCase {
         const session = await this.sessionRepository.findByJti({ jti: decoded.jti });
 
         if (!session) {
-            if (decoded.id) {
-                await this.sessionRepository.deleteAllByUserId({ userId: decoded.id });
+            if (decoded.idUser) {
+                await this.sessionRepository.deleteAllByUserId({ idUser: decoded.idUser });
             }
             throw new InvalidTokenError({ originalError: "Sessão não encontrada ou revogada. Possível reuso de token detectado. Todas as sessões foram encerradas por segurança." });
         }
@@ -46,7 +46,7 @@ export default class RotationSessionUseCase {
         }
 
         const { accessToken, refreshToken: newRefreshToken } = await this.sessionTokenService.rotateSessionTokens({
-            userId: user.id,
+            idUser: user.idUser,
             email: user.email.value,
             currentSessionEntity: session
         });
@@ -55,7 +55,7 @@ export default class RotationSessionUseCase {
             accessToken,
             refreshToken: newRefreshToken,
             user: {
-                id: user.id,
+                idUser: user.idUser,
                 name: user.name.value
             }
         });

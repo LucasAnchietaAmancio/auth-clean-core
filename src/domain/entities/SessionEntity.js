@@ -1,9 +1,9 @@
 import InvalidDomainParams from "../errors/InvalidDomainParams.js";
 
 export default class SessionEntity {
-    constructor({ id, userId, token, jti, expiresAt }) {
-        this.id = id || null;
-        this.userId = userId;
+    constructor({ idSession, idUser, token, jti, expiresAt }) {
+        this.idSession = idSession || null;
+        this.idUser = idUser;
         this.token = token;
         this.jti = jti;
         this.expiresAt = expiresAt;
@@ -23,17 +23,17 @@ export default class SessionEntity {
         return this.expiresAt < now;
     }
 
-    isOwnedBy(userId) {
-        return this.userId === userId;
+    isOwnedBy(idUser) {
+        return this.idUser === idUser;
     }
 
-    static create({ userId, token, jti, expiresAt }) {
-        if (!userId || !token || !jti || !expiresAt) throw new InvalidDomainParams({ originalError: "Dados insuficientes para reconstrução da entidade" });
-        return new SessionEntity({ userId, token, jti, expiresAt });
+    static create({ idUser, token, jti, expiresAt }) {
+        if (!idUser || !token || !jti || !expiresAt) throw new InvalidDomainParams({ originalError: "Dados insuficientes para reconstrução da entidade" });
+        return new SessionEntity({ idUser, token, jti, expiresAt });
     }
 
-    static restore({ id, userId, token, jti, expiresAt }) {
-        if (!id || !userId || !token || !jti || !expiresAt) throw new InvalidDomainParams({ originalError: "Dados insuficientes para reconstrução da entidade" });
-        return new SessionEntity({ id, userId, token, jti, expiresAt });
+    static restore({ idSession, idUser, token, jti, expiresAt }) {
+        if (!idSession || !idUser || !token || !jti || !expiresAt) throw new InvalidDomainParams({ originalError: "Dados insuficientes para reconstrução da entidade" });
+        return new SessionEntity({ idSession, idUser, token, jti, expiresAt });
     }
 }

@@ -44,18 +44,18 @@ describe("Testes de Serviço: SessionTokenService", () => {
             sessionRepositoryMock.save.mockResolvedValue();
 
             const result = await sut.generateSessionTokens({
-                userId: 1,
+                idUser: 1,
                 email: "test@email.com",
             });
 
             expect(result.accessToken).toBe("access-token-valido");
             expect(result.refreshToken).toBe("refresh-token-valido");
             expect(tokenProviderMock.generateAccessToken).toHaveBeenCalledWith({
-                payload: { id: 1, email: "test@email.com" },
+                payload: { idUser: 1, email: "test@email.com" },
                 expires: "15m",
             });
             expect(tokenProviderMock.generateRefreshToken).toHaveBeenCalledWith({
-                payload: { id: 1, email: "test@email.com" },
+                payload: { idUser: 1, email: "test@email.com" },
                 expires: "7d",
             });
             expect(hashProviderMock.hash).toHaveBeenCalledWith({ value: "refresh-token-valido" });
@@ -66,8 +66,8 @@ describe("Testes de Serviço: SessionTokenService", () => {
     describe("Validação do método 'rotateSessionTokens':", () => {
         test("Deve rotacionar a sessão atualizando a entidade com novos valores e persistir no banco", async () => {
             const currentSession = SessionEntity.restore({
-                id: 100,
-                userId: 1,
+                idSession: 100,
+                idUser: 1,
                 token: "old-token-hash",
                 jti: "old-jti",
                 expiresAt: 99999,
@@ -83,7 +83,7 @@ describe("Testes de Serviço: SessionTokenService", () => {
             sessionRepositoryMock.update.mockResolvedValue();
 
             const result = await sut.rotateSessionTokens({
-                userId: 1,
+                idUser: 1,
                 email: "test@email.com",
                 currentSessionEntity: currentSession,
             });

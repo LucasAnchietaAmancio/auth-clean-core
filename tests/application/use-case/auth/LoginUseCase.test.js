@@ -1,7 +1,7 @@
 import { describe, jest, test, expect } from "@jest/globals";
 import LoginUseCase from "../../../../src/application/use-cases/auth/LoginUseCase.js";
-import LoginRequestDTO from "../../../../src/application/dtos/auth/LoginRequestDTO.js";
-import LoginResponseDTO from "../../../../src/application/dtos/auth/LoginResponseDTO.js";
+import LoginRequestDTO from "../../../../src/application/use-cases/auth/dtos/LoginRequestDTO.js";
+import LoginResponseDTO from "../../../../src/application/use-cases/auth/dtos/LoginResponseDTO.js";
 import UserEntity from "../../../../src/domain/entities/UserEntity.js";
 import InvalidCredentialsError from "../../../../src/application/errors/InvalidCredentialsError.js";
 
@@ -31,7 +31,7 @@ describe("Testes de Aplicação: LoginUseCase", () => {
     });
 
     const mockUserEntity = UserEntity.restore({
-        id: "id-valido",
+        idUser: "id-valido",
         name: "Lucas Anchieta",
         email: "lucas@email.com",
         hashedPassword: "hashed_password"
@@ -56,11 +56,11 @@ describe("Testes de Aplicação: LoginUseCase", () => {
         expect(result.accessToken).toBe("access-token");
         expect(result.refreshToken).toBe("refresh-token");
         expect(sessionTokenServiceMock.generateSessionTokens).toHaveBeenCalledWith({
-            userId: "id-valido",
+            idUser: "id-valido",
             email: "lucas@email.com"
         });
         expect(result.user).toEqual({
-            id: "id-valido",
+            idUser: "id-valido",
             name: "Lucas Anchieta"
         });
     });

@@ -26,10 +26,10 @@ model users {
 
 model sessions {
   id_session Int      @id @default(autoincrement())
-  user_id    Int
+  id_user    Int
   token      String   @unique
   jti        String   @unique
   expires_at Int
   created_at DateTime @default(now())
-  user       users    @relation(fields: [user_id], references: [id_user])
+  user       users    @relation(fields: [id_user], references: [id_user])
 }

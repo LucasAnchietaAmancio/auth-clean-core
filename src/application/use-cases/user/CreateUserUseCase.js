@@ -1,7 +1,7 @@
 import UserEntity from "../../../domain/entities/UserEntity.js";
 import EmailAlreadyInUseError from "../../errors/EmailAlreadyInUseError.js";
 import InternalApplicationError from "../../errors/InternalApplicationError.js";
-import CreateUserResponseDTO from "../../dtos/user/CreateUserResponseDTO.js";
+import CreateUserResponseDTO from "./dtos/CreateUserResponseDTO.js";
 
 export default class CreateUserUseCase {
     constructor({ userRepository, hashProvider }) {
@@ -26,7 +26,7 @@ export default class CreateUserUseCase {
         const savedUser = await this.userRepository.save({ user });
 
         return new CreateUserResponseDTO({
-            id: savedUser.id,
+            idUser: savedUser.idUser,
             name: savedUser.name.value,
             email: savedUser.email.value
         });

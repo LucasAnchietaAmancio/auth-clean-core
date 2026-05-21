@@ -15,7 +15,7 @@ export default class ISessionRepository {
         throw new Error("Método não implementado");
     }
 
-    async deleteAllByUserId({ userId }) {
+    async deleteAllByUserId({ idUser }) {
         throw new Error("Método não implementado");
     }
 }
