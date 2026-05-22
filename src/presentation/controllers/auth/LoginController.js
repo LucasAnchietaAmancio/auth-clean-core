@@ -6,9 +6,10 @@ export default class LoginController {
         this.envs = envs;
     }
 
-    async handle(req, res, next) {
+    async handle (req, res, next) {
         try {
             const { email, password } = req.body;
+
             const loginRequestDTO = new LoginRequestDTO({ email, password });
 
             const result = await this.loginUseCase.execute({ loginRequestDTO });
@@ -28,7 +29,7 @@ export default class LoginController {
                 message: "Login realizado com sucesso",
                 metadata: {
                     idUser: result.user.idUser,
-                    acessToken: result.accessToken
+                    accessToken: result.accessToken
                 }
             });
 

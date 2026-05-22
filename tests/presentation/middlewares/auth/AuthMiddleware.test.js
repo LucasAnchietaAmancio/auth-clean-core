@@ -1,6 +1,6 @@
 import { describe, jest, test, expect, beforeEach } from "@jest/globals";
 import AuthMiddleware from "../../../../src/presentation/middlewares/auth/AuthMiddleware.js";
-import InvalidTokenError from "../../../../src/application/errors/InvalidTokenError.js";
+import UnauthorizedError from "../../../../src/presentation/errors/UnauthorizedError.js";
 import UserEntity from "../../../../src/domain/entities/UserEntity.js";
 
 describe("Testes de Apresentação: AuthMiddleware", () => {
@@ -58,24 +58,24 @@ describe("Testes de Apresentação: AuthMiddleware", () => {
             expect(next).toHaveBeenCalledWith();
         });
 
-        test("Deve chamar next(error) com InvalidTokenError se o cabeçalho Authorization estiver ausente", async () => {
+        test("Deve chamar next(error) com UnauthorizedError se o cabeçalho Authorization estiver ausente", async () => {
             const middlewareFn = sut.execute();
             await middlewareFn(req, res, next);
 
-            expect(next).toHaveBeenCalledWith(expect.any(InvalidTokenError));
-            expect(next.mock.calls[0][0].metadata.cause).toContain("Token de acesso não fornecido");
+            expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedError));
+            expect(next.mock.calls[0][0].metadata.cause).toContain("Token de acesso não fornecido ou formato inválido.");
         });
 
-        test("Deve chamar next(error) com InvalidTokenError se o cabeçalho não começar com Bearer", async () => {
+        test("Deve chamar next(error) com UnauthorizedError se o cabeçalho não começar com Bearer", async () => {
             req.headers.authorization = "Basic credentials";
 
             const middlewareFn = sut.execute();
             await middlewareFn(req, res, next);
 
-            expect(next).toHaveBeenCalledWith(expect.any(InvalidTokenError));
+            expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedError));
         });
 
-        test("Deve chamar next(error) com InvalidTokenError se o token decodificado for inválido ou sem e-mail", async () => {
+        test("Deve chamar next(error) com UnauthorizedError se o token decodificado for inválido ou sem e-mail", async () => {
             req.headers.authorization = "Bearer token-sem-email";
             tokenProviderMock.verifyAccessToken.mockResolvedValue({
                 idUser: 1,
@@ -85,7 +85,7 @@ describe("Testes de Apresentação: AuthMiddleware", () => {
             const middlewareFn = sut.execute();
             await middlewareFn(req, res, next);
 
-            expect(next).toHaveBeenCalledWith(expect.any(InvalidTokenError));
+            expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedError));
         });
 
         test("Deve chamar next(error) com o erro original quando o tokenProvider falhar na verificação", async () => {
@@ -99,7 +99,7 @@ describe("Testes de Apresentação: AuthMiddleware", () => {
             expect(next).toHaveBeenCalledWith(originalError);
         });
 
-        test("Deve chamar next(error) com InvalidTokenError se o usuário não for encontrado no banco de dados", async () => {
+        test("Deve chamar next(error) com UnauthorizedError se o usuário não for encontrado no banco de dados", async () => {
             req.headers.authorization = "Bearer token-valido";
             tokenProviderMock.verifyAccessToken.mockResolvedValue({
                 idUser: 1,
@@ -110,7 +110,7 @@ describe("Testes de Apresentação: AuthMiddleware", () => {
             const middlewareFn = sut.execute();
             await middlewareFn(req, res, next);
 
-            expect(next).toHaveBeenCalledWith(expect.any(InvalidTokenError));
+            expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedError));
             expect(next.mock.calls[0][0].metadata.cause).toContain("Usuário não encontrado ou inativo");
         });
     });

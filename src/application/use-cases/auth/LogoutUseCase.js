@@ -1,6 +1,6 @@
 import InvalidTokenError from "../../errors/InvalidTokenError.js";
 
-export default class LogOffUseCase {
+export default class LogoutUseCase {
     constructor({ sessionRepository, tokenProvider }) {
         this.sessionRepository = sessionRepository;
         this.tokenProvider = tokenProvider;
@@ -14,7 +14,7 @@ export default class LogOffUseCase {
 
         if (!decoded || !decoded.jti) {
             throw new InvalidTokenError({ originalError: "Token de atualização inválido, para realizer o logoff" });
-        }
+        };
 
         const session = await this.sessionRepository.findByJti({ jti: decoded.jti });
 

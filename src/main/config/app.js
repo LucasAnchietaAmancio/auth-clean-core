@@ -11,7 +11,7 @@ import RouteNotFoundError from "../../presentation/errors/RouteNotFoundError.js"
 import { makeCreateUserController } from "../factories/controllers/makeCreateUserController.js";
 import { makeGetProfileController } from "../factories/controllers/makeGetProfileController.js";
 import { makeLoginController } from "../factories/controllers/makeLoginController.js";
-import { makeLogOffController } from "../factories/controllers/makeLogOffController.js";
+import { makeLogoutController } from "../factories/controllers/makeLogoutController.js";
 import { makeRotationSessionController } from "../factories/controllers/makeRotationSessionController.js";
 
 import { makeAuthMiddleware } from "../factories/middlewares/makeAuthMiddleware.js";
@@ -64,7 +64,7 @@ export default class AppConfig {
         const logOffRouter = new LogOffRouter({
             router: Router(),
             validator: makeValidationSchemaMiddleware(),
-            controller: makeLogOffController({ envs: this.envs, db: this.db })
+            controller: makeLogoutController({ envs: this.envs, db: this.db })
         });
 
         const refreshRouter = new RefreshRouter({

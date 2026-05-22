@@ -6,7 +6,7 @@ export default class GetProfileController {
         this.validatorProvider = validatorProvider;
     }
 
-    async handle(req, res, next) {
+    async handle (req, res, next) {
         try {
             const body = this.validatorProvider
                 ? this.validatorProvider.validate({ value: req.body, schemaName: "USER_PROFILE" })

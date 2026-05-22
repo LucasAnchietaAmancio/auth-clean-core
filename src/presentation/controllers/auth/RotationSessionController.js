@@ -6,15 +6,15 @@ export default class RotationSessionController {
         this.envs = envs;
     }
 
-    async handle(req, res, next) {
+    async handle (req, res, next) {
         try {
             const refreshToken = req.cookies?.refreshToken;
             const rotationSessionRequestDTO = new RotationSessionRequestDTO({ refreshToken });
 
             const result = await this.rotationSessionUseCase.execute({ rotationSessionRequestDTO });
 
-            const accessTokenMaxAge = this.envs?.jwt?.accessTokenCookieMaxAgeMs || 15 * 60 * 1000;
-            const refreshTokenMaxAge = this.envs?.jwt?.refreshTokenCookieMaxAgeMs || 7 * 24 * 60 * 60 * 1000;
+            const accessTokenMaxAge = this.envs?.jwt?.accessTokenCookieMaxAgeMs;
+            const refreshTokenMaxAge = this.envs?.jwt?.refreshTokenCookieMaxAgeMs;
 
             res.cookie("refreshToken", result.refreshToken, {
                 httpOnly: true,
@@ -27,8 +27,8 @@ export default class RotationSessionController {
                 success: true,
                 message: "Sessão rotacionada com sucesso",
                 metadata: {
-                    idUser: result.user,
-                    acessToken: result.acessToken
+                    idUser: result.user.idUser,
+                    accessToken: result.accessToken
                 }
             });
 

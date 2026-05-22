@@ -6,7 +6,7 @@ export default class InvalidTokenError extends AppError {
             code: "INVALID_TOKEN",
             category: "APPLICATION",
             severity: "LOW",
-            type: "UNAUTHORIZED",
+            type: "INTERNAL",
             message: "Token inválido",
             metadata: {
                 description: "Token de autenticação inválido ou expirado.",

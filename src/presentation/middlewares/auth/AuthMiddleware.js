@@ -1,4 +1,4 @@
-import InvalidTokenError from "../../../application/errors/InvalidTokenError.js";
+import UnauthorizedError from "../../errors/UnauthorizedError.js";
 
 export default class AuthMiddleware {
     constructor({ tokenProvider, userRepository }) {
@@ -9,10 +9,10 @@ export default class AuthMiddleware {
     execute() {
         return async (req, res, next) => {
             try {
-
                 const authHeader = req.headers.authorization;
+
                 if (!authHeader || !authHeader.startsWith("Bearer ")) {
-                    throw new InvalidTokenError({ originalError: "Token de acesso não fornecido ou formato inválido." });
+                    throw new UnauthorizedError({ originalError: "Token de acesso não fornecido ou formato inválido." });
                 }
 
                 const accessToken = authHeader.split(" ")[1];
@@ -20,13 +20,13 @@ export default class AuthMiddleware {
                 const decoded = await this.tokenProvider.verifyAccessToken({ accessToken });
                 
                 if (!decoded || !decoded.email) {
-                    throw new InvalidTokenError({ originalError: "Token de acesso inválido." });
+                    throw new UnauthorizedError({ originalError: "Token de acesso inválido." });
                 }
 
                 const user = await this.userRepository.findByEmail({ email: decoded.email });
 
                 if (!user) {
-                    throw new InvalidTokenError({ originalError: "Usuário não encontrado ou inativo." });
+                    throw new UnauthorizedError({ originalError: "Usuário não encontrado ou inativo." });
                 }
 
                 req.user = {

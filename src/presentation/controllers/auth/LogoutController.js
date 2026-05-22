@@ -1,12 +1,13 @@
-export default class LogOffController {
-    constructor({ logOffUseCase }) {
-        this.logOffUseCase = logOffUseCase;
+export default class LogoutController {
+    constructor({ logoutUseCase }) {
+        this.logoutUseCase = logoutUseCase;
     }
 
-    async handle(req, res, next) {
+    async handle (req, res, next) {
         try {
+            const refreshToken = req.cookies?.refreshToken
 
-            await this.logOffUseCase.execute({ refreshToken });
+            await this.logoutUseCase.execute({ refreshToken });
 
             res.clearCookie("refreshToken", {
                 httpOnly: true,

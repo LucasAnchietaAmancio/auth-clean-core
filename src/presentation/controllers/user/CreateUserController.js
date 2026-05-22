@@ -5,7 +5,7 @@ export default class CreateUserController {
         this.createUserUseCase = createUserUseCase;
     }
 
-    async handle(req, res, next) {
+    async handle (req, res, next) {
         try {
             const { name, email, password } = req.body;
             const createUserRequestDTO = new CreateUserRequestDTO({ name, email, password });

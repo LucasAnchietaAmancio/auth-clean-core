@@ -1,9 +1,9 @@
 import { describe, jest, test, expect, beforeEach } from "@jest/globals";
-import LogOffUseCase from "../../../../src/application/use-cases/auth/LogOffUseCase.js";
+import LogoutUseCase from "../../../../src/application/use-cases/auth/LogoutUseCase.js";
 import InvalidTokenError from "../../../../src/application/errors/InvalidTokenError.js";
 import SessionEntity from "../../../../src/domain/entities/SessionEntity.js";
 
-describe("Testes de Aplicação: LogOffUseCase", () => {
+describe("Testes de Aplicação: LogoutUseCase", () => {
     const sessionRepositoryMock = {
         findByJti: jest.fn(),
         deleteByJti: jest.fn(),
@@ -14,7 +14,7 @@ describe("Testes de Aplicação: LogOffUseCase", () => {
         decodeToken: jest.fn(),
     };
 
-    const sut = new LogOffUseCase({
+    const sut = new LogoutUseCase({
         sessionRepository: sessionRepositoryMock,
         tokenProvider: tokenProviderMock,
     });

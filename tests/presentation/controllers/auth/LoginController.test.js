@@ -41,34 +41,40 @@ describe("Testes de Apresentação: LoginController", () => {
 
     describe("Validação do método 'handle':", () => {
         test("Deve realizar login, definir cookies seguros e retornar status 200", async () => {
+
             const loginResponse = new LoginResponseDTO({
-                accessToken: "access-token-mock",
-                refreshToken: "refresh-token-mock",
-                user: { idUser: "1", name: "User Mock" },
+                accessToken: "access-token-valido",
+                refreshToken: "refresh-token-valido",
+                user: {
+                    idUser: "1",
+                    name: "User Mock"
+                }
             });
+
             loginUseCaseMock.execute.mockResolvedValue(loginResponse);
 
             await sut.handle(req, res, next);
 
             expect(loginUseCaseMock.execute).toHaveBeenCalled();
-            expect(res.cookie).toHaveBeenCalledWith("accessToken", "access-token-mock", {
-                httpOnly: true,
-                secure: true,
-                sameSite: "strict",
-                maxAge: 900000,
-            });
-            expect(res.cookie).toHaveBeenCalledWith("refreshToken", "refresh-token-mock", {
+
+            expect(res.cookie).toHaveBeenCalledWith("refreshToken", "refresh-token-valido", {
                 httpOnly: true,
                 secure: true,
                 sameSite: "strict",
                 maxAge: 604800000,
             });
+
             expect(res.status).toHaveBeenCalledWith(200);
+
             expect(res.json).toHaveBeenCalledWith({
                 success: true,
                 message: "Login realizado com sucesso",
-                user: { idUser: "1", name: "User Mock" },
+                metadata: {
+                    idUser: "1",
+                    accessToken: "access-token-valido"
+                }
             });
+
             expect(next).not.toHaveBeenCalled();
         });
 

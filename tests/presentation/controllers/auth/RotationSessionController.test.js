@@ -30,7 +30,7 @@ describe("Testes de Apresentação: RotationSessionController", () => {
             },
         };
         res = {
-            cookie: jest.fn(),
+            cookie: jest.fn().mockReturnThis(),
             status: jest.fn().mockReturnThis(),
             json: jest.fn(),
         };
@@ -45,28 +45,29 @@ describe("Testes de Apresentação: RotationSessionController", () => {
                 refreshToken: "new-refresh-token-mock",
                 user: { idUser: "1", name: "User Mock" },
             });
+
             rotationSessionUseCaseMock.execute.mockResolvedValue(rotationResponse);
 
             await sut.handle(req, res, next);
 
             expect(rotationSessionUseCaseMock.execute).toHaveBeenCalled();
-            expect(res.cookie).toHaveBeenCalledWith("accessToken", "new-access-token-mock", {
-                httpOnly: true,
-                secure: true,
-                sameSite: "strict",
-                maxAge: 900000,
-            });
+
             expect(res.cookie).toHaveBeenCalledWith("refreshToken", "new-refresh-token-mock", {
                 httpOnly: true,
                 secure: true,
                 sameSite: "strict",
                 maxAge: 604800000,
             });
+
             expect(res.status).toHaveBeenCalledWith(200);
+
             expect(res.json).toHaveBeenCalledWith({
                 success: true,
                 message: "Sessão rotacionada com sucesso",
-                user: { idUser: "1", name: "User Mock" },
+                metadata: {
+                    idUser: "1",
+                    accessToken: "new-access-token-mock"
+                },
             });
             expect(next).not.toHaveBeenCalled();
         });

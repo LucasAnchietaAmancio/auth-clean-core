@@ -1,13 +1,13 @@
 import { describe, jest, test, expect, beforeEach } from "@jest/globals";
-import LogOffController from "../../../../src/presentation/controllers/auth/LogOffController.js";
+import LogoutController from "../../../../src/presentation/controllers/auth/LogoutController.js";
 
-describe("Testes de Apresentação: LogOffController", () => {
-    const logOffUseCaseMock = {
+describe("Testes de Apresentação: LogoutController", () => {
+    const logoutUseCaseMock = {
         execute: jest.fn(),
     };
 
-    const sut = new LogOffController({
-        logOffUseCase: logOffUseCaseMock,
+    const sut = new LogoutController({
+        logoutUseCase: logoutUseCaseMock,
     });
 
     let req;
@@ -31,11 +31,11 @@ describe("Testes de Apresentação: LogOffController", () => {
 
     describe("Validação do método 'handle':", () => {
         test("Deve realizar logoff, limpar cookie do refreshToken e retornar status 200", async () => {
-            logOffUseCaseMock.execute.mockResolvedValue();
+            logoutUseCaseMock.execute.mockResolvedValue();
 
             await sut.handle(req, res, next);
 
-            expect(logOffUseCaseMock.execute).toHaveBeenCalledWith({
+            expect(logoutUseCaseMock.execute).toHaveBeenCalledWith({
                 refreshToken: "refresh-token-mock",
             });
             expect(res.clearCookie).toHaveBeenCalledWith("refreshToken", {
@@ -53,7 +53,7 @@ describe("Testes de Apresentação: LogOffController", () => {
 
         test("Deve chamar next(error) quando a execução do use case falhar", async () => {
             const error = new Error("Token inválido");
-            logOffUseCaseMock.execute.mockRejectedValue(error);
+            logoutUseCaseMock.execute.mockRejectedValue(error);
 
             await sut.handle(req, res, next);
 

@@ -7,7 +7,6 @@ export default class SessionTokenService {
         this.sessionRepository = sessionRepository;
         this.envs = envs;
     }
-
     async generateSessionTokens({ idUser, email }) {
 
         const accessToken = await this.tokenProvider.generateAccessToken({ payload: { idUser: idUser, email }, expires: this.envs.jwt.accessTokenExpiresIn} );
