@@ -16,6 +16,9 @@ describe("Testes de Apresentação: LogoutController", () => {
 
     beforeEach(() => {
         req = {
+            headers: {
+                authorization: "Bearer access-token-mock",
+            },
             cookies: {
                 refreshToken: "refresh-token-mock",
             },
@@ -37,6 +40,7 @@ describe("Testes de Apresentação: LogoutController", () => {
 
             expect(logoutUseCaseMock.execute).toHaveBeenCalledWith({
                 refreshToken: "refresh-token-mock",
+                accessToken: "access-token-mock",
             });
             expect(res.clearCookie).toHaveBeenCalledWith("refreshToken", {
                 httpOnly: true,

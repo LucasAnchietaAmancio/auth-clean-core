@@ -14,7 +14,6 @@ export default class LoginController {
 
             const result = await this.loginUseCase.execute({ loginRequestDTO });
 
-            const accessTokenMaxAge = this.envs?.jwt?.accessTokenCookieMaxAgeMs || 15 * 60 * 1000;
             const refreshTokenMaxAge = this.envs?.jwt?.refreshTokenCookieMaxAgeMs || 7 * 24 * 60 * 60 * 1000;
 
             res.cookie("refreshToken", result.refreshToken, {

@@ -12,9 +12,14 @@ describe("Testes de Apresentação: AuthMiddleware", () => {
         findByEmail: jest.fn(),
     };
 
+    const cacheProviderMock = {
+        get: jest.fn(),
+    };
+
     const sut = new AuthMiddleware({
         tokenProvider: tokenProviderMock,
         userRepository: userRepositoryMock,
+        cacheProvider: cacheProviderMock,
     });
 
     let req;
@@ -36,7 +41,9 @@ describe("Testes de Apresentação: AuthMiddleware", () => {
             tokenProviderMock.verifyAccessToken.mockResolvedValue({
                 idUser: 1,
                 email: "test@email.com",
+                jti: "jti-access",
             });
+            cacheProviderMock.get.mockResolvedValue(null);
             userRepositoryMock.findByEmail.mockResolvedValue(
                 UserEntity.restore({
                     idUser: 1,
@@ -50,6 +57,9 @@ describe("Testes de Apresentação: AuthMiddleware", () => {
             await middlewareFn(req, res, next);
 
             expect(tokenProviderMock.verifyAccessToken).toHaveBeenCalledWith({ accessToken: "token-valido" });
+            expect(cacheProviderMock.get).toHaveBeenCalledWith({
+                key: "auth:blacklist:jti-access",
+            });
             expect(userRepositoryMock.findByEmail).toHaveBeenCalledWith({ email: "test@email.com" });
             expect(req.user).toEqual({
                 idUser: 1,
@@ -79,8 +89,10 @@ describe("Testes de Apresentação: AuthMiddleware", () => {
             req.headers.authorization = "Bearer token-sem-email";
             tokenProviderMock.verifyAccessToken.mockResolvedValue({
                 idUser: 1,
+                jti: "jti-access",
 
             });
+            cacheProviderMock.get.mockResolvedValue(null);
 
             const middlewareFn = sut.execute();
             await middlewareFn(req, res, next);
@@ -92,6 +104,7 @@ describe("Testes de Apresentação: AuthMiddleware", () => {
             req.headers.authorization = "Bearer token-expirado";
             const originalError = new Error("Token expired");
             tokenProviderMock.verifyAccessToken.mockRejectedValue(originalError);
+            cacheProviderMock.get.mockResolvedValue(null);
 
             const middlewareFn = sut.execute();
             await middlewareFn(req, res, next);
@@ -104,7 +117,9 @@ describe("Testes de Apresentação: AuthMiddleware", () => {
             tokenProviderMock.verifyAccessToken.mockResolvedValue({
                 idUser: 1,
                 email: "test@email.com",
+                jti: "jti-access",
             });
+            cacheProviderMock.get.mockResolvedValue(null);
             userRepositoryMock.findByEmail.mockResolvedValue(null);
 
             const middlewareFn = sut.execute();
@@ -112,6 +127,22 @@ describe("Testes de Apresentação: AuthMiddleware", () => {
 
             expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedError));
             expect(next.mock.calls[0][0].metadata.cause).toContain("Usuário não encontrado ou inativo");
+        });
+
+        test("Deve chamar next(error) com UnauthorizedError se o token estiver na blacklist", async () => {
+            req.headers.authorization = "Bearer token-blacklisted";
+            tokenProviderMock.verifyAccessToken.mockResolvedValue({
+                idUser: 1,
+                email: "test@email.com",
+                jti: "jti-blacklisted",
+            });
+            cacheProviderMock.get.mockResolvedValue("revoked");
+
+            const middlewareFn = sut.execute();
+            await middlewareFn(req, res, next);
+
+            expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedError));
+            expect(userRepositoryMock.findByEmail).not.toHaveBeenCalled();
         });
     });
 });

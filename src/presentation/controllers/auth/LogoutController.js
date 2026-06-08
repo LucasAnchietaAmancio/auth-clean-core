@@ -5,9 +5,11 @@ export default class LogoutController {
 
     async handle (req, res, next) {
         try {
-            const refreshToken = req.cookies?.refreshToken
+            const refreshToken = req.cookies?.refreshToken;
+            const authHeader = req.headers.authorization;
+            const accessToken = authHeader?.startsWith("Bearer ") ? authHeader.split(" ")[1] : undefined;
 
-            await this.logoutUseCase.execute({ refreshToken });
+            await this.logoutUseCase.execute({ refreshToken, accessToken });
 
             res.clearCookie("refreshToken", {
                 httpOnly: true,
@@ -24,5 +26,4 @@ export default class LogoutController {
         }
     }
 }
-
 

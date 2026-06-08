@@ -19,7 +19,9 @@ export default class Envs {
             accessSecretKey: this.parseTo({ value: process.env.JWT_ACCESS_SECRET_KEY, type: "string", key: "JWT_ACCESS_SECRET_KEY" }),
             refreshSecretKey: this.parseTo({ value: process.env.JWT_REFRESH_SECRET_KEY, type: "string", key: "JWT_REFRESH_SECRET_KEY" }),
             accessTokenExpiresIn: this.parseTo({ value: process.env.ACCESS_TOKEN_EXPIRES_IN, type: "string", key: "ACCESS_TOKEN_EXPIRES_IN" }),
-            refreshTokenExpiresIn: this.parseTo({ value: process.env.REFRESH_TOKEN_EXPIRES_IN, type: "string", key: "REFRESH_TOKEN_EXPIRES_IN" })
+            refreshTokenExpiresIn: this.parseTo({ value: process.env.REFRESH_TOKEN_EXPIRES_IN, type: "string", key: "REFRESH_TOKEN_EXPIRES_IN" }),
+            accessTokenCookieMaxAgeMs: this.parseTo({ value: process.env.ACCESS_TOKEN_COOKIE_MAX_AGE_MS, type: "number", key: "ACCESS_TOKEN_COOKIE_MAX_AGE_MS" }),
+            refreshTokenCookieMaxAgeMs: this.parseTo({ value: process.env.REFRESH_TOKEN_COOKIE_MAX_AGE_MS, type: "number", key: "REFRESH_TOKEN_COOKIE_MAX_AGE_MS" })
         };
 
         this.server = {

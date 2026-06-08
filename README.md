@@ -1,12 +1,96 @@
-# Clean OAuth Core
+# OAuth Authentication API
 
-API de autenticação desenvolvida com foco em arquitetura escalável, segurança e aplicação de boas práticas de engenharia de software.
+API de autenticacao desenvolvida como projeto academico para estudar JWT, gerenciamento de sessao com Redis, Clean Architecture, DDD, SOLID e TDD.
 
-O projeto foi criado como laboratório de estudos avançados em backend moderno, explorando conceitos utilizados em aplicações reais, como autenticação baseada em JWT, gerenciamento de sessões com Redis, separação de camadas, DDD (Domain-Driven Design), TDD (Test-Driven Development) e organização arquitetural inspirada em Clean Architecture.
+O foco nao e apenas autenticar usuarios. O objetivo e modelar um fluxo mais proximo de producao, com sessao persistida, refresh token com rotacao, blacklist de access token no logout e separacao clara de responsabilidades entre as camadas.
 
----
+## Visao Geral
 
-# Tecnologias Utilizadas
+- Cadastro de usuarios.
+- Login com `accessToken` e `refreshToken`.
+- Refresh com rotacao de sessao.
+- Logout com revogacao da sessao e blacklist do access token.
+- Endpoint autenticado para perfil do usuario.
+- Rate limit com Redis.
+- Validacao centralizada com Zod.
+- Testes automatizados com Jest.
+
+## Como Pensei a Arquitetura
+
+O projeto foi organizado para deixar cada responsabilidade no seu lugar.
+
+- `domain` concentra entidades, value objects e contratos.
+- `application` concentra regras de caso de uso e orquestracao.
+- `presentation` trata HTTP, cookies, headers e middlewares.
+- `infra` implementa banco, cache, hash, token e validacao.
+- `main` faz a composicao das dependencias e sobe a aplicacao.
+
+As decisoes centrais foram estas:
+
+- PostgreSQL e a fonte de verdade para usuarios e sessoes.
+- Redis e usado apenas para preocupacoes temporarias, como blacklist e rate limit.
+- Refresh token e salvo em hash, nunca em texto puro.
+- Access token tem vida curta e pode ser bloqueado imediatamente no logout.
+- O middleware bloqueia requisições antes de chegar na camada de aplicacao.
+- As factories mantem a composicao desacoplada e facil de testar.
+
+## Diagramas
+
+### Fluxo de Refresh Token
+
+![Fluxo de refresh token](docs/refresh_token_flow.png)
+
+### Arquitetura em Camadas
+
+```mermaid
+flowchart TD
+    Client[Cliente] --> Presentation[Presentation]
+    Presentation --> Application[Application]
+    Application --> Domain[Domain]
+    Application --> Infra[Infra]
+
+    Infra --> PostgreSQL[(PostgreSQL)]
+    Infra --> Redis[(Redis)]
+    Infra --> JWT[JWT / Bcrypt / Zod]
+
+    Main[Main / Composition Root] --> Presentation
+    Main --> Application
+    Main --> Infra
+```
+
+### Logout e Blacklist
+
+```mermaid
+sequenceDiagram
+    participant C as Cliente
+    participant API as API
+    participant DB as PostgreSQL
+    participant R as Redis
+
+    C->>API: POST /v1/logout
+    API->>API: verifyRefreshToken(refreshToken)
+    API->>DB: findByJti(refreshJti)
+    API->>API: verifyAccessToken(accessToken)
+    API->>R: SET auth:blacklist:<accessJti> revoked EX ttl
+    API->>DB: deleteByJti(refreshJti)
+    API-->>C: 200 OK
+```
+
+## Estrutura do Projeto
+
+```txt
+src/
+  domain/
+  application/
+  infra/
+  presentation/
+  main/
+tests/
+docs/
+prisma/
+```
+
+## Tecnologias
 
 - Node.js
 - JavaScript
@@ -20,144 +104,54 @@ O projeto foi criado como laboratório de estudos avançados em backend moderno,
 - JWT
 - Bcrypt
 - Zod
+- OpenAPI
+- Swagger UI
+- Jest
 
----
+## Variaveis de Ambiente
 
-# Objetivos do Projeto
-
-Este projeto tem como foco aprofundar conhecimentos em:
-
-- Arquitetura em camadas
-- Clean Architecture
-- DDD (Domain-Driven Design)
-- TDD (Test-Driven Development)
-- SOLID
-- Separação de responsabilidades
-- Fluxo de autenticação moderno
-- Gerenciamento de sessão
-- Segurança em APIs
-- Estruturação backend escalável
-- Containerização de aplicações
-- CI/CD e automação de pipelines
-- Boas práticas de desenvolvimento backend
-
----
-
-# Funcionalidades
-
-- Registro de usuários
-- Login autenticado
-- Access Token e Refresh Token
-- Cookies HttpOnly
-- Rotação de sessão com JTI
-- Logout com revogação de sessão
-- Endpoint autenticado `/v1/user/me`
-- Rate Limit com Redis
-- Validação centralizada com Zod
-- Estrutura desacoplada em camadas
-- Healthcheck entre containers
-- AppError para leitura semântica de erros
-- Pipeline de CI utilizando GitHub Actions
-
----
-
-# Arquitetura
-
-O projeto está organizado em camadas inspiradas nos princípios da Clean Architecture e DDD:
-
-```txt
-src/
- ├── domain/
- ├── application/
- ├── infra/
- ├── presentation/
- └── main/
-```
-
-## Responsabilidades
-
-| Camada | Responsabilidade |
-|---|---|
-| domain | Regras de negócio |
-| application | Casos de uso |
-| infra | Banco de dados, Redis e providers |
-| presentation | Controllers, middlewares e rotas |
-| main | Bootstrap da aplicação |
-
----
-
-# Fluxo de Autenticação
-
-O sistema utiliza:
-
-- Access Token para autenticação de curta duração
-- Refresh Token para renovação de sessão
-- Identificador JTI para controle de sessão
-- Redis para gerenciamento e revogação
-- Cookies HttpOnly para maior segurança
-
----
-
-# Variáveis de Ambiente
-
-Utilize o `.env.example` como base:
+Use `.env.example` como base. Os valores essenciais sao:
 
 ```env
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=123456
-POSTGRES_DB=oauth_db
-POSTGRES_PORT=5432
-
-DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}"
-
-BCRYPT_SALT=12
-
+DATABASE_URL=postgresql://...
+REDIS_URL=redis://redis:6379
 JWT_ACCESS_SECRET_KEY=your_access_secret
 JWT_REFRESH_SECRET_KEY=your_refresh_secret
-
 ACCESS_TOKEN_EXPIRES_IN=15m
 REFRESH_TOKEN_EXPIRES_IN=7d
-
-ACCESS_TOKEN_COOKIE_MAX_AGE_MS=1200000
-REFRESH_TOKEN_COOKIE_MAX_AGE_MS=864000000
-
+ACCESS_TOKEN_COOKIE_MAX_AGE_MS=900000
+REFRESH_TOKEN_COOKIE_MAX_AGE_MS=604800000
+BCRYPT_SALT=12
 PORT=8080
-
-REDIS_URL=redis://redis:6379
-REDIS_PORT=6379
 ```
 
----
-
-# Executando com Docker
-
-Clone o projeto:
+## Como Executar
 
 ```bash
-git clone https://github.com/LucasAnchietaAmancio/auth-clean-core.git
-```
-
-Acesse a pasta:
-
-```bash
-cd auth-clean-core
-```
-
-Crie o arquivo `.env`:
-
-```bash
+git clone <repo-url>
+cd oauth-authentication
 cp .env.example .env
-```
-
-Suba os containers:
-
-```bash
 docker compose up --build
 ```
 
----
+Se preferir rodar sem Docker, instale as dependencias e inicie o projeto com os servicos necessarios ja disponiveis:
 
-# Scripts Disponíveis
+```bash
+npm install
+npm run dev
+```
+
+## Banco de Dados
+
+As migrations ficam em `prisma/migrations`.
+
+Para aplicar as migrations:
+
+```bash
+npx prisma migrate deploy
+```
+
+## Scripts
 
 ```bash
 npm run dev
@@ -166,86 +160,57 @@ npm test
 npm run lint
 ```
 
----
+## Endpoints
 
-# Banco de Dados
+### Auth
 
-As migrations estão localizadas em:
+| Metodo | Rota | Descricao |
+|---|---|---|
+| POST | `/v1/login` | Login do usuario |
+| POST | `/v1/refresh` | Rotacao da sessao usando o refresh token |
+| POST | `/v1/logout` | Revoga a sessao e grava o access token na blacklist |
 
-```txt
-prisma/migrations
-```
+Observacao: `POST /v1/logout` espera o `refreshToken` no cookie HttpOnly e o `accessToken` no header `Authorization: Bearer <token>`.
 
-Para aplicar as migrations:
+### Usuario
+
+| Metodo | Rota | Descricao |
+|---|---|---|
+| POST | `/v1/user/register` | Cadastro de usuario |
+| GET | `/v1/user/me` | Retorna o usuario autenticado |
+
+## Swagger / OpenAPI
+
+A documentacao interativa fica disponivel em `/docs`.
+
+- Spec OpenAPI: `src/main/config/openapi.js`
+- JSON bruto da spec: `/docs/openapi.json`
+- Autenticacao por `bearerAuth` para `accessToken`
+- Autenticacao por `refreshTokenCookie` para `refreshToken`
+- Logout exige `refreshToken` no cookie HttpOnly e `accessToken` no header `Authorization`
+
+## Documentacao Complementar
+
+- [Swagger UI](http://localhost:8080/docs)
+- [Spec OpenAPI](src/main/config/openapi.js)
+- [Fluxo de refresh token](docs/refresh_token_flow.png)
+- [Erros e cenarios de validacao](docs/ERRORS.md)
+
+## Qualidade
+
+O projeto possui testes automatizados, separacao clara de responsabilidades e lint configurado para manter o codigo consistente.
+
+Antes de publicar ou demonstrar o projeto, rode:
 
 ```bash
-npx prisma migrate deploy
+npm test
+npm run lint
 ```
 
----
+## Roadmap
 
-# Endpoints
-
-## Auth
-
-| Método | Rota | Descrição |
-|---|---|---|
-| POST | `/v1/login` | Login |
-| POST | `/v1/refresh` | Renovação de token |
-| POST | `/v1/logout` | Logout |
-
----
-
-## Usuário
-
-| Método | Rota | Descrição |
-|---|---|---|
-| POST | `/v1/user/register` | Registro de usuário |
-| GET | `/v1/user/me` | Retorna o usuário autenticado |
-
----
-
-# Estrutura Técnica
-
-O projeto aplica conceitos como:
-
-- Repository Pattern
-- Use Cases
-- Dependency Separation
-- Middleware de autenticação
-- Centralização de validações
-- Persistência de sessão com Redis
-- JWT + Refresh Token Flow
-- Organização desacoplada de regras de negócio
-- Arquitetura orientada a responsabilidades
-- Root Composition
-- Factory Pattern
-- Testes automatizados
-- DDD (Domain-Driven Design)
-- TDD (Test-Driven Development)
-- Pipeline de CI com GitHub Actions
-
----
-
-# Roadmap
-
-Funcionalidades futuras planejadas:
-
-- [ ] Rotação avançada de refresh token
-- [ ] RBAC (Role Based Access Control)
-- [ ] Autenticação em dois fatores (2FA)
-- [ ] Testes de integração
-- [ ] Documentação com Swagger
-- [ ] Observabilidade e logs
-- [ ] CI/CD mais avançado
-- [ ] Monitoramento
-- [ ] Hardening de segurança
-- [ ] Rate limit avançado
-
----
-
-# Status
-
-🚧 Projeto em desenvolvimento contínuo.
-
-Este projeto está sendo utilizado como ambiente de estudo e evolução técnica em backend, arquitetura de software, DDD, TDD, CI/CD e autenticação moderna.
+- Rotacao avancada de refresh token.
+- RBAC.
+- Autenticacao em dois fatores.
+- Observabilidade e logs.
+- Testes de integracao.

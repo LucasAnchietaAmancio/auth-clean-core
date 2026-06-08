@@ -1,9 +1,11 @@
 import { Router } from "express";
+import swaggerUi from "swagger-ui-express";
 import CreateUserRouter from "../../presentation/routes/user/CreateUserRouter.js";
 import GetProfileRouter from "../../presentation/routes/user/GetProfileRouter.js";
 import LoginRouter from "../../presentation/routes/auth/LoginRouter.js";
 import LogOffRouter from "../../presentation/routes/auth/LogOffRouter.js";
 import RefreshRouter from "../../presentation/routes/auth/RefreshRouter.js";
+import openApiSpecification from "./openapi.js";
 
 import ErrorHandlerMiddleware from "../../presentation/middlewares/ErrorHandlerMiddleware.js";
 import RouteNotFoundError from "../../presentation/errors/RouteNotFoundError.js";
@@ -37,6 +39,20 @@ export default class AppConfig {
         this.app.use(this.cookieParser());
     }
 
+    setupDocumentation() {
+        this.app.get("/docs/openapi.json", (req, res) => {
+            return res.json(openApiSpecification);
+        });
+
+        this.app.use("/docs", swaggerUi.serve, swaggerUi.setup(openApiSpecification, {
+            customSiteTitle: "OAuth Authentication API Docs",
+            swaggerOptions: {
+                docExpansion: "list",
+                displayRequestDuration: true
+            }
+        }));
+    }
+
     setupRateLimit() {
         const globalLimiter = this.rateLimit({
             windowMs: 15 * 60 * 1000,
@@ -64,7 +80,7 @@ export default class AppConfig {
         const logOffRouter = new LogOffRouter({
             router: Router(),
             validator: makeValidationSchemaMiddleware(),
-            controller: makeLogoutController({ envs: this.envs, db: this.db })
+            controller: makeLogoutController({ envs: this.envs, db: this.db, redisClient: this.redisClient })
         });
 
         const refreshRouter = new RefreshRouter({
@@ -85,7 +101,7 @@ export default class AppConfig {
             router: Router(),
             rateLimit: makeLimiter(),
             validator: makeValidationSchemaMiddleware(),
-            auth: makeAuthMiddleware({ envs: this.envs, db: this.db }),
+            auth: makeAuthMiddleware({ envs: this.envs, db: this.db, redisClient: this.redisClient }),
             controller: makeGetProfileController({ db: this.db })
         });
 
@@ -108,6 +124,7 @@ export default class AppConfig {
 
     init() {
         this.setupGlobalMiddlewares();
+        this.setupDocumentation();
         this.setupRateLimit();
         this.setupRoutes();
         this.setupErrorHandlers();

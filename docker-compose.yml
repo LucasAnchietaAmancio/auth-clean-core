@@ -31,7 +31,7 @@ services:
     restart: unless-stopped
       
   redis:
-    image: redis:7-alpine
+    image: redis:7.4-alpine
     container_name: oauth-redis
     ports:
       - "${REDIS_PORT}:6379"

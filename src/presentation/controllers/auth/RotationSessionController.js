@@ -13,7 +13,6 @@ export default class RotationSessionController {
 
             const result = await this.rotationSessionUseCase.execute({ rotationSessionRequestDTO });
 
-            const accessTokenMaxAge = this.envs?.jwt?.accessTokenCookieMaxAgeMs;
             const refreshTokenMaxAge = this.envs?.jwt?.refreshTokenCookieMaxAgeMs;
 
             res.cookie("refreshToken", result.refreshToken, {

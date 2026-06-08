@@ -15,7 +15,7 @@ export default class BcryptHashProvider extends IHashProvider {
         } catch (error) {
             throw EncryptionError.handle({
                 error,
-                message: "Falha na proteção de dados",
+                message: "Falha na geração de hash",
             });
         }
     }
@@ -27,7 +27,7 @@ export default class BcryptHashProvider extends IHashProvider {
         } catch (error) {
             throw EncryptionError.handle({
                 error,
-                message: "Falha na verificação de dados",
+                message: "Falha na verificação de dados encriptados",
             });
         }
     }
