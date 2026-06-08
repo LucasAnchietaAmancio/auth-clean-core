@@ -1,0 +1,29 @@
+export default class LogoutController {
+    constructor({ logoutUseCase }) {
+        this.logoutUseCase = logoutUseCase;
+    }
+
+    async handle (req, res, next) {
+        try {
+            const refreshToken = req.cookies?.refreshToken;
+            const authHeader = req.headers.authorization;
+            const accessToken = authHeader?.startsWith("Bearer ") ? authHeader.split(" ")[1] : undefined;
+
+            await this.logoutUseCase.execute({ refreshToken, accessToken });
+
+            res.clearCookie("refreshToken", {
+                httpOnly: true,
+                secure: true,
+                sameSite: "strict"
+            });
+
+            return res.status(200).json({
+                success: true,
+                message: "Logoff realizado com sucesso"
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+}
+
